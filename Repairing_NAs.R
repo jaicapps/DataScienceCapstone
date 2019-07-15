@@ -144,4 +144,4 @@ df <- subset(df, select = -c(taxmap))
 
 
 # Column 'sanborn'
-str(df$sanborn)
+df <- subset(df, select = -c(sanborn))
