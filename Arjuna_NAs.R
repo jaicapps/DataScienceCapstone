@@ -16,8 +16,5 @@ df$lottype <- as.factor(df$lottype)
 summary(df$lottype)
 
 summary(df$bsmtcode)
-class(df$bsmtcode)
-#475 NAs converted to 5s since 5 is unknown. After this, convert to factor since 0 to 5 have different meanings (given in PDF):
-df$bsmtcode[is.na(df$bsmtcode)] <- 5
-df$bsmtcode <- as.factor(df$bsmtcode)
-summary(df$bsmtcode)
+# Deleted since it is too detailed: 
+df <- subset(df, select = -c(bsmtcode))
