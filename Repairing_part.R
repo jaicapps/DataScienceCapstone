@@ -48,6 +48,25 @@ df$pfirm15_flag[is.na(df$pfirm15_flag)] <- 0
 # Change type as factor
 df$pfirm15_flag <- as.factor(df$pfirm15_flag)
 
-# Column 'firm07_flag' # 
+# Column 'firm07_flag' # Decided to delete cuz we have the same data for the year 2015.
+# We keep only 2015 because it is more accurate.
 str(df$firm07_flag)
 summary(df$firm07_flag)
+df <- subset(df, select = -c(firm07_flag))
+
+# Column 'healthcenterdistrict'
+## To repare this, you have to execute Mika's code first! She repaired problem with borough lebels.
+df$healthcenterdistrict <- as.factor(df$healthcenterdistrict)
+str(df$healthcenterdistrict)
+summary(df$healthcenterdistrict)
+
+table(is.na(df$healthcenterdistrict))
+health_per_borough <- unique(df[c("borough", "healthcenterdistrict")]) #keep cds for each borough
+health_per_borough <- health_per_borough[!(is.na(health_per_borough$healthcenterdistrict)), ] #remove cd NAs
+get_sample<-function(borough) { #get a sample from cds where the borough is received 
+  return (sample(health_per_borough[health_per_borough$borough==borough,]$healthcenterdistrict,1)) 
+}
+df$healthcenterdistrict[is.na(df$healthcenterdistrict)] <- lapply(df$borough[is.na(df$healthcenterdistrict)], FUN=get_sample)
+
+levels(df$healthcenterdistrict)
+
