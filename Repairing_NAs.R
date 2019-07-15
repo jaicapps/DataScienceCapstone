@@ -145,3 +145,10 @@ df <- subset(df, select = -c(taxmap))
 
 # Column 'sanborn'
 df <- subset(df, select = -c(sanborn))
+
+
+# Column 'zmcode'
+str(df$zmcode)
+summary(df$zonemap)
+df <- subset(df, select = -c(zonemap))
+
