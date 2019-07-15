@@ -33,12 +33,10 @@ table(is.na(df$lot))
 ########
 #cd
 table(is.na(df$cd))
-cd_per_borough <- unique(df[c("borough", "cd")])
-cd_per_borough <- cd_per_borough[!(is.na(cd_per_borough$cd)), ]
-cd_BX <- cd_per_borough[cd_per_borough$borough=="BX",]$cd
-cd_BK <- cd_per_borough[cd_per_borough$borough=="BK",]$cd
-sample(cd_BX, 1)
-df2 <- df
-
-df2[is.na(df2) & df2$borough=="BX"] <- sample(cd_BX, 1)
+cd_per_borough <- unique(df[c("borough", "cd")]) #keep cds for each borough
+cd_per_borough <- cd_per_borough[!(is.na(cd_per_borough$cd)), ] #remove cd NAs
+get_sample<-function(borough) { #get a sample from cds where the borough is received 
+  return (sample(cd_per_borough[cd_per_borough$borough==borough,]$cd,1)) 
+}
+df$cd[is.na(df$cd)] <- lapply(df$borough[is.na(df$cd)], FUN=get_sample) 
 
