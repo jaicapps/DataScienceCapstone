@@ -34,26 +34,54 @@ table(is.na(df$lot))
 ########
 #cd
 table(is.na(df$cd))
-cd_per_borough <- unique(df[c("borough", "cd")]) #keep cds for each borough
-cd_per_borough <- cd_per_borough[!(is.na(cd_per_borough$cd)), ] #remove cd NAs
-get_sample_cd<-function(borough) { #get a sample from cds where the borough is received 
-  return (sample(cd_per_borough[cd_per_borough$borough==borough,]$cd,1)) 
-}
-df$cd[is.na(df$cd)] <- unlist(lapply(df$borough[is.na(df$cd)], FUN=get_sample_cd)) 
+df$cd[is.na(df$cd)] <- as.factor(fill_NAs_by_borough(df,"cd"))
 df$cd <- as.factor(substring(as.character(df$cd),2))
 ########
 #ct2010: (census tox) TODO
-########
 
 ########
 #cb2010: (census block) TODO
-########
 
 ########
 #schooldist
-########
 table(is.na(df$schooldist))
 df$schooldist[is.na(df$schooldist)] <- as.factor(fill_NAs_by_borough(df,"schooldist"))
+########
+#council
+table(is.na(df$council))
+df$council[is.na(df$council)] <- as.factor(fill_NAs_by_borough(df,"council"))
+########
+#zipcode : TODO
+table(is.na(df$zipcode))
+########
+#firecomp
+table(is.na(df$firecomp))
+########
+#policeprct
+table(is.na(df$policeprct))
+df$policeprct[is.na(df$policeprct)] <- as.factor(fill_NAs_by_borough(df,"policeprct"))
+########
+#healtharea
+table(is.na(df$healtharea))
+df$healtharea[is.na(df$healtharea)] <- as.factor(fill_NAs_by_borough(df,"healtharea"))
+########
+#healtharea
+table(is.na(df$sanitboro))
+df$sanitboro[is.na(df$sanitboro)] <- as.factor(fill_NAs_by_borough(df,"sanitboro"))
+########
+#sanitsub
+table(is.na(df$sanitsub))
+df$sanitsub <- as.factor(df$sanitsub)
+#zonedist1
+table(is.na(df$zonedist1))
+#delete 'addres', 'zonedist2','zonedist3','zonedist4', 'overlay1', 'overlay2'
+df <- df[, !(colnames(df) %in% c('address','zonedist2','zonedist3','zonedist4', 'overlay1', 'overlay2', 'spdist2', 'spdist3', 'splitzone'))]
+#spdist1
+table(df$spdist1=="")
+df$spdist1 <- as.factor(ifelse(df$spdist1=="", 0, 1))
+#spdist1
+table(df$ltdheight=="")
+df$ltdheight <- as.factor(ifelse(df$ltdheight=="", 0, 1))
 
 
 
