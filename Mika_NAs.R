@@ -1,3 +1,4 @@
+source("utils.R")
 colnames(df)
 ########
 #borough
@@ -35,8 +36,30 @@ table(is.na(df$lot))
 table(is.na(df$cd))
 cd_per_borough <- unique(df[c("borough", "cd")]) #keep cds for each borough
 cd_per_borough <- cd_per_borough[!(is.na(cd_per_borough$cd)), ] #remove cd NAs
-get_sample<-function(borough) { #get a sample from cds where the borough is received 
+get_sample_cd<-function(borough) { #get a sample from cds where the borough is received 
   return (sample(cd_per_borough[cd_per_borough$borough==borough,]$cd,1)) 
 }
-df$cd[is.na(df$cd)] <- lapply(df$borough[is.na(df$cd)], FUN=get_sample) 
+df$cd[is.na(df$cd)] <- unlist(lapply(df$borough[is.na(df$cd)], FUN=get_sample_cd)) 
+df$cd <- as.factor(substring(as.character(df$cd),2))
+########
+#ct2010: (census tox) TODO
+########
+
+########
+#cb2010: (census block) TODO
+########
+
+########
+#schooldist
+########
+table(is.na(df$schooldist))
+df$schooldist[is.na(df$schooldist)] <- as.factor(fill_NAs_by_borough(df,"schooldist"))
+
+
+
+
+
+
+
+
 
