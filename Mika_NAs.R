@@ -75,19 +75,22 @@ df$sanitsub <- as.factor(df$sanitsub)
 #zonedist1
 table(is.na(df$zonedist1))
 #delete 'addres', 'zonedist2','zonedist3','zonedist4', 'overlay1', 'overlay2'
-df <- df[, !(colnames(df) %in% c('address','zonedist2','zonedist3','zonedist4', 'overlay1', 'overlay2', 'spdist2', 'spdist3', 'splitzone'))]
+df <- df[, !(colnames(df) %in% c('address','zonedist2','zonedist3','zonedist4', 'overlay1', 'overlay2', 'spdist2', 'spdist3', 'splitzone', 'bldgclass', 'easements', 'ownername'))]
 #spdist1
 table(df$spdist1=="")
 df$spdist1 <- as.factor(ifelse(df$spdist1=="", 0, 1))
-#spdist1
+#ltdheight
 table(df$ltdheight=="")
 df$ltdheight <- as.factor(ifelse(df$ltdheight=="", 0, 1))
+#landuse
+summary(as.factor(df$landuse))
+df$landuse[is.na(df$landuse)] <- "0" #add Unkown category 
+df$landuse <- as.factor(df$landuse)
 
+summary(as.factor(df$easements))
+summary(as.factor(df$ownertype))
+table(is.na(df$lotarea))
+#example fill_median df$lotarea <- fill_NAs_median(df, "lotarea")
 
-
-
-
-
-
-
+colnames(df)[19]
 

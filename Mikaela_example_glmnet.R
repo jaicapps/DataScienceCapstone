@@ -4,7 +4,7 @@ library(caret)
 #install.packages("glmnet", repos = "http://cran.us.r-project.org")
 library(glmnet)
 # Load the data
-#data("Boston", package = "MASS")
+df <- data("Boston", package = "MASS")
 
 # Split the data into training and test set
 set.seed(123)
