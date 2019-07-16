@@ -152,3 +152,110 @@ str(df$zmcode)
 summary(df$zonemap)
 df <- subset(df, select = -c(zonemap))
 
+### COLUMNS ABOUT VISUALIZATION X,Y, ZMCODE #### DELETED
+# Column: xcoord
+df <- subset(df, select = -c(xcoord))
+# Column: ycoord
+df <- subset(df, select = -c(ycoord))
+# COlumn: zmcode
+df <- subset(df, select = -c(zmcode))
+
+
+
+# Column: tract2010 DELETED
+df <- subset(df, select = -c(tract2010))
+
+
+# Column: condono DELETED
+df <- subset(df, select = -c(condono))
+
+# Column: bbl
+df <- subset(df, select = -c(bbl))
+
+
+# Column: borocode (KEEP IT, no NAs)
+summary(df$borocode)
+
+# Column: facilfar (DELETED)
+df <- subset(df, select = -c(facilfar))
+
+#Column: commfar
+df <- subset(df, select = -c(commfar))
+
+# Column: residfar
+df <- subset(df, select = -c(residfar))
+
+# Column: builtfar
+df <- subset(df, select = -c(builtfar))
+828658/858976 # this % is not specified. Too many.
+# Column: landmark
+df <- subset(df, select = -c(landmark))
+
+# Column: histdist
+summary(df$histdist)
+df <- subset(df, select = -c(histdist))
+
+
+# Column: yearalter2 & yearalter1
+# If yearalter2 is empty than take Alter 1, otherwise keep 0, which means that bulding was
+# not modified at all.
+df$yearalter3 <- ifelse(df$yearalter2 == 0 , df$yearalter1, df$yearalter2) # If else...
+# Change the name of the column
+names(df)[names(df) == "yearalter3"] <- "last_modif"
+# Delete previous columns yearalter1 & yearalter2
+df <- subset(df, select = -c(yearalter2))
+df <- subset(df, select = -c(yearalter1))
+
+
+#Column: yearbuilt
+# Plot the data (we have some zeros)
+library(ggplot2)
+ggplot(df, aes(x=yearbuilt)) + geom_histogram() +
+  labs(title="Year built",x="Year", y = "Count")
+
+#Mode function:
+getmode <- function(v) {
+  uniqv <- unique(v)
+  uniqv[which.max(tabulate(match(v, uniqv)))]
+}
+
+# input mode into 0.
+df$yearbuilt <- ifelse(df$yearbuilt == 0, getmode(df$yearbuilt), df$yearbuilt)
+# input mode into NAs
+df$yearbuilt <- ifelse(is.na(df$yearbuilt), getmode(df$yearbuilt), df$yearbuilt)
+
+# Check it: 
+# ggplot(df, aes(x=yearbuilt)) + geom_histogram() +
+#   labs(title="Year built",x="Year", y = "Count")
+
+
+# Column: exempttot
+str(df$exempttot)
+summary(df$exempttot)
+
+# Column: exempttot
+df <- subset(df, select = -c(exempttot))
+
+#Column: exemptland
+df <- subset(df, select = -c(exemptland))
+
+
+# Column: assesstot (TARGET VARIABLE !!!!!)
+#Check statistics and outliers
+summary(df$assesstot)
+str(df$assesstot)
+boxplot(df$assesstot)
+hist(df$assesstot)
+
+# Replace NAs by zero
+df$assesstot[is.na(df$assesstot)] <- 0
+# Delete all values equal to zero
+df <- filter(df, assesstot !=0)
+
+
+# Column: assessland (TARGET VARIABLE !!!!!)
+summary(df$assessland)
+boxplot(df$assessland)
+hist(df$assessland)
+
+
