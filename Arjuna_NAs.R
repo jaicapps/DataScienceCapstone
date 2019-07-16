@@ -1,5 +1,54 @@
-df=read.csv("pluto_18v2_1.csv")
+#df=read.csv("pluto_18v2_1.csv")
 t(t(colnames(df)))
+
+sum(df$otherarea==0,na.rm = TRUE)
+summary(df$otherarea)
+# Removing this coulumn since it has 49,282 NAs and 790871 zeroes:
+df <- subset(df, select = -c(otherarea))
+
+# Removing areasource since it provides details about the source from which building
+# area measurements is obtained, and this is unecessary for our prediction:
+df <- subset(df, select = -c(areasource))
+
+summary(df$numbldgs)
+# Replacing NAs with medians for each corresponding borough:
+df$numbldgs[is.na(df$numbldgs)] <- fill_NAs_median(df, "numbldgs")
+summary(df$numbldgs)
+
+summary(df$numfloors)
+# Replacing NAs with medians for each corresponding borough:
+df$numfloors[is.na(df$numfloors)] <- fill_NAs_median(df, "numfloors")
+summary(df$numfloors)
+
+summary(df$unitsres)
+# Replacing NAs with medians for each corresponding borough:
+df$unitsres[is.na(df$unitsres)] <- fill_NAs_median(df, "unitsres")
+summary(df$unitsres)
+
+summary(df$unitstotal)
+# Replacing NAs with medians for each corresponding borough:
+df$unitstotal[is.na(df$unitstotal)] <- fill_NAs_median(df, "unitstotal")
+summary(df$unitstotal)
+
+summary(df$lotfront)
+# Replacing NAs with medians:
+df$lotfront[is.na(df$lotfront)] <- fill_NAs_median(df, "lotfront")
+summary(df$lotfront)
+
+summary(df$lotdepth)
+# Replacing NAs with median for each corresponding borough:
+df$lotdepth[is.na(df$lotdepth)] <- fill_NAs_median(df, "lotdepth")
+summary(df$lotdepth)
+
+summary(df$bldgfront)
+# Replacing NAs with medians for each corresponding borough:
+df$bldgfront[is.na(df$bldgfront)] <- fill_NAs_median(df, "bldgfront")
+summary(df$bldgfront)
+
+summary(df$bldgdepth)
+# Replacing NAs with medians for each corresponding borough:
+df$bldgdepth[is.na(df$bldgdepth)] <- fill_NAs_median(df, "bldgdepth")
+summary(df$bldgdepth)
 
 summary(df$ext)
 # Convert to 2 levels: 1 for extension for E, EG, and G, and 0 for no extension (blank):
