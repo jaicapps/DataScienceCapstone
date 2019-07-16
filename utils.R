@@ -2,7 +2,7 @@ get_sample<-function(b, col_per_borocode, colname) { #get a sample where the bor
   return (sample(col_per_borocode[colname][col_per_borocode["borocode"]==b],1)) 
 }
 
-fill_NAs_by_borocode <- function(df, colname) {
+fill_NAs_by_borough <- function(df, colname) {
   col_per_borocode <- unique(df[c("borocode", colname)]) #keep unique values for each borocode
   col_per_borocode <- col_per_borocode[!(is.na(col_per_borocode[colname])), ] #remove NAs
   df[colname][is.na(df[colname])] <- unlist(lapply(df["borocode"][is.na(df[colname])], FUN=get_sample, col_per_borocode, colname))
