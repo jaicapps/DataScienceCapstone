@@ -36,11 +36,6 @@ table(is.na(df$lot))
 table(is.na(df$cd))
 df$cd[is.na(df$cd)] <- as.factor(fill_NAs_by_borough(df,"cd"))
 df$cd <- as.factor(substring(as.character(df$cd),2))
-########
-#ct2010: (census tox) TODO
-
-########
-#cb2010: (census block) TODO
 
 ########
 #schooldist
@@ -74,8 +69,8 @@ table(is.na(df$sanitsub))
 df$sanitsub <- as.factor(df$sanitsub)
 #zonedist1
 table(is.na(df$zonedist1))
-#delete 'addres', 'zonedist2','zonedist3','zonedist4', 'overlay1', 'overlay2'
-df <- df[, !(colnames(df) %in% c('address','zonedist2','zonedist3','zonedist4', 'overlay1', 'overlay2', 'spdist2', 'spdist3', 'splitzone', 'bldgclass', 'easements', 'ownername'))]
+#delete columns
+df <- df[, !(colnames(df) %in% c('address','zonedist2','zonedist3','zonedist4', 'overlay1', 'overlay2', 'spdist2', 'spdist3', 'splitzone', 'bldgclass', 'easements', 'ownername', 'ct2010', 'cb2010'))]
 #spdist1
 table(df$spdist1=="")
 df$spdist1 <- as.factor(ifelse(df$spdist1=="", 0, 1))
