@@ -1,0 +1,154 @@
+#df <- read.csv("pluto_18v2_1.csv")
+colnames(df)
+
+# Column 'edesigdate'
+# Delete the column. It has only 2 levels, check below. Delete it cuz almost all rows have the same date.
+table(df$edesigdate)
+df <- subset(df, select = -c(edesigdate))
+
+# Column 'polidate'
+# Delete the column. All data is NA.
+summary(df$polidate)
+df <- subset(df, select = -c(polidate))
+
+# Column 'masdate'
+# Delete the column. All data is NA.
+summary(df$masdate)
+df <- subset(df, select = -c(masdate))
+
+# Column 'basempdate' the same explanation as # Column 'edesigdate' (column at the begining).
+summary(df$basempdate)
+str(df$basempdate)
+df <- subset(df, select = -c(basempdate))
+
+# Column 'landmkdate' the same explanation as # Column 'edesigdate' (column at the begining).
+summary(df$landmkdate)
+df <- subset(df, select = -c(landmkdate))
+ 
+# Column 'zoningdate' the same explanation as # Column 'edesigdate' (column at the begining).
+summary(df$zoningdate)
+df <- subset(df, select = -c(zoningdate))
+
+# Column 'dcasdate' the same explanation as # Column 'edesigdate' (column at the begining).
+summary(df$dcasdate)
+df <- subset(df, select = -c(dcasdate))
+
+# Column 'rpaddate' the same explanation as # Column 'edesigdate' (column at the begining).
+summary(df$rpaddate)
+df <- subset(df, select = -c(rpaddate))
+
+# Column 'pfirm15_flag' this column indicated if a tax lot is vulnerable to be flooded.  KEEP THIS COLUMN
+# We transform NA into 0. 92% of data is 1.
+summary(df$pfirm15_flag)
+str(df$pfirm15_flag)
+793294/858982*100 # 92%
+858982-793294
+# replace NA into 0
+df$pfirm15_flag[is.na(df$pfirm15_flag)] <- 0
+# Change type as factor
+df$pfirm15_flag <- as.factor(df$pfirm15_flag)
+
+# Column 'firm07_flag' # Decided to delete cuz we have the same data for the year 2015.
+# We keep only 2015 because it is more accurate.
+str(df$firm07_flag)
+summary(df$firm07_flag)
+df <- subset(df, select = -c(firm07_flag))
+
+# Column 'healthcenterdistrict' KEEP THIS COLUMN
+## To repare this, you have to execute Mika's code first! She repaired problem with borough lebels.
+str(df$healthcenterdistrict)
+summary(df$healthcenterdistrict)
+
+#Check how many NAs are there
+table(is.na(df$healthcenterdistrict))
+#We find an NA value, later we wanna figure out from which district this NA comes from. If for example
+#it is from BX we wanna sample healthcenterdistrict only from BX area (it is in order to be the most accurate).
+health_per_borough <- unique(df[c("borough", "healthcenterdistrict")]) #keep cds for each borough
+health_per_borough <- health_per_borough[!(is.na(health_per_borough$healthcenterdistrict)), ] #remove cd NAs
+get_sample<-function(borough) { #get a sample from cds where the borough is received 
+  return (sample(health_per_borough[health_per_borough$borough==borough,]$healthcenterdistrict,1)) 
+}
+df$healthcenterdistrict[is.na(df$healthcenterdistrict)] <- lapply(df$borough[is.na(df$healthcenterdistrict)], FUN=get_sample)
+
+df$healthcenterdistrict <- unlist(df$healthcenterdistrict)
+df$healthcenterdistrict <- as.factor(df$healthcenterdistrict)
+
+
+# Column 'sanitdistrict' KEEP THIS COLUMN
+str(df$sanitdistrict)
+summary(df$sanitdistrict)
+
+# Let's repate the same steps like `healthcenterdistrict`, while imputing NAs
+table(is.na(df$sanitdistrict))
+#We find an NA value, later we wanna figure out from which district this NA comes from. If for example
+#it is from BX we wanna sample sanitdistrict only from BX area (it is in order to be the most accurate).
+sanit_per_borough <- unique(df[c("borough", "sanitdistrict")]) #keep cds for each borough
+sanit_per_borough <- sanit_per_borough[!(is.na(sanit_per_borough$sanitdistrict)), ] #remove cd NAs
+get_sample<-function(borough) { #get a sample from cds where the borough is received 
+  return (sample(sanit_per_borough[sanit_per_borough$borough==borough,]$sanitdistrict,1)) 
+}
+df$sanitdistrict[is.na(df$sanitdistrict)] <- lapply(df$borough[is.na(df$sanitdistrict)], FUN=get_sample)
+
+df$sanitdistrict <- unlist(df$sanitdistrict) # unlist the result column
+df$sanitdistrict <- as.factor(df$sanitdistrict) # and save as factor
+
+
+
+
+#Column 'version' DROP IT. it has only 1 level, which is version: 18v2.1
+str(df$version)
+summary(df$version)
+# Drop column
+df <- subset(df, select = -c(version))
+
+
+
+# Column 'plutomapid' 
+# this column is useful for VISULIZATION not for PREDICTION.
+# Deleted, restore if you wanna use it!
+str(df$plutomapid)
+summary(df$plutomapid)
+df <- subset(df, select = -c(plutomapid))
+
+
+# Column 'mappluto_f'
+str(df$mappluto_f)
+summary(df$mappluto_f)
+df <- subset(df, select = -c(mappluto_f))
+
+# Column 'appdate'
+str(df$appdate)
+summary(df$appdate)
+df <- subset(df, select = -c(appdate))
+
+
+# Column 'appbbl'
+str(df$appbbl)
+summary(df$appbbl)
+df <- subset(df, select = -c(appbbl))
+
+# Column 'edesignum'
+# CONVERTE IT: E means there is some hazadrus regarding this property
+# converted -> E =1; NA=0
+summary(df$edesignum)
+str(df$edesignum)
+## Converting data E=1 and empty = 0
+df$edesignum <- as.character(df$edesignum) # as character
+df$edesignum[df$edesignum==""] <- "0" # if empty then 0
+df$edesignum[df$edesignum != "0"] <- "1" # if not zero then 1
+df$edesignum <- as.factor(df$edesignum) # save as factor
+
+
+# Column 'taxmap' # DROP IT
+df <- subset(df, select = -c(taxmap))
+
+
+# Column 'sanborn'
+df <- subset(df, select = -c(sanborn))
+
+
+# Column 'zmcode'
+str(df$zmcode)
+summary(df$zonemap)
+df <- subset(df, select = -c(zonemap))
+
