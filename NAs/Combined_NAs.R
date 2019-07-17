@@ -1,9 +1,10 @@
 df=read.csv("pluto_18v2_1.csv")
-source("utils.R")
+source("NAs/utils.R")
 colnames(df)
 #######################################################################################################################################
 
 # borough
+class(df$borough)
 summary(df$borough)
 table(is.na(df$borough))
 # Delete levels that are extremely large (errors):
@@ -30,69 +31,80 @@ levels(df$borough)
 #######################################################################################################################################
 
 # block
+class(df$block)
 table(is.na(df$block)) # No NAs
 #######################################################################################################################################
 
 # lot
+class(df$lot)
 table(is.na(df$lot)) # No NAs
 #######################################################################################################################################
 
 # cd
+class(df$cd)
 table(is.na(df$cd))
-# Replace NAs with random cd values of the corresponding boroughs and converting to factor:
-df$cd[is.na(df$cd)] <- as.factor(fill_NAs_by_borough(df,"cd"))
-# Removing the first digit of cd since it refers to the borough code which is information 
-# present in another column:
+# Replace 994 NAs with random cd values of the corresponding boroughs:
+df$cd[is.na(df$cd)] <- fill_NAs_by_zipcode(df,"cd")
+# Removing the first digit of cd since it refers to the borough code which is information present in another
+# column and converting to factor:
 df$cd <- as.factor(substring(as.character(df$cd),2))
 #######################################################################################################################################
 
 # ct2010 and cb2010 are deleted since we only use zipcode to match to census data.
 # schooldist
+class(df$schooldist)
 table(is.na(df$schooldist))
-# Replace NAs with random schooldist values of the corresponding boroughs and converting to factor:
-df$schooldist[is.na(df$schooldist)] <- as.factor(fill_NAs_by_borough(df,"schooldist"))
+# Replace 1632 NAs with random schooldist values of the corresponding boroughs and converting to factor:
+df$schooldist[is.na(df$schooldist)] <- fill_NAs_by_zipcode(df,"schooldist")
+df$schooldist <- as.factor(df$schooldist)
 #######################################################################################################################################
 
 # council
+class(df$council)
 table(is.na(df$council))
-# Replace NAs with random council values of the corresponding boroughs and converting to factor:
-df$council[is.na(df$council)] <- as.factor(fill_NAs_by_borough(df,"council"))
+# Replace 994 NAs with random council values of the corresponding boroughs and converting to factor:
+df$council[is.na(df$council)] <- as.factor(fill_NAs_by_zipcode(df,"council"))
 #######################################################################################################################################
 
-# zipcode : TODO
+# zipcode
+class(df$zipcode)
 table(is.na(df$zipcode))
-# ZIPCODE dealing with NAs. Transfer NA values into Python and there repair.
-# Choosing NA values in zipcode column and save them into folder zipcode_fill
-########subset(df, is.na(zipcode)) %>% write.csv(., "zipcode_fill/Zips_code.csv")
-# Delete NAs from the data
+# Rows containing zipcode as NA transfered into Python and repaired there.
+# Saving these rows in the CSV file Zips_code in the folder zipcode_fill:
+# subset(df, is.na(zipcode)) %>% write.csv(., "zipcode_fill/Zips_code.csv")
+
+# Deleting rows with NAs in zipcode from the data fram df:
 df <- filter(df, !is.na(df$zipcode))
-#Read a file which was changed in Python before
+
+# Read the repaired CSV file which was created through the Python program:
 fixed_zips <- read.csv('zipcode_fill/zips_fixed.csv')
-#Rbind old data frame (df) with corrected zipcodes (from Python)
+
+# Row bind the old data frame (df) with the corrected zipcodes obtained through Python:
 df <- rbind(df, fixed_zips)
 summary(df$zipcode)
 #######################################################################################################################################
 
 # firecomp
+class(df$firecomp)
 table(is.na(df$firecomp)) # No NAs
 #######################################################################################################################################
 
 # policeprct
 table(is.na(df$policeprct))
 # Replace NAs with random policeprct values of the corresponding boroughs and converting to factor:
-df$policeprct[is.na(df$policeprct)] <- as.factor(fill_NAs_by_borough(df,"policeprct"))
+df$policeprct[is.na(df$policeprct)] <- as.factor(fill_NAs_by_zipcode(df,"policeprct"))
 #######################################################################################################################################
 
 # healtharea
 table(is.na(df$healtharea))
 # Replace NAs with random healtharea values of the corresponding boroughs and converting to factor:
-df$healtharea[is.na(df$healtharea)] <- as.factor(fill_NAs_by_borough(df,"healtharea"))
+df$healtharea[is.na(df$healtharea)] <- as.factor(fill_NAs_by_zipcode(df,"healtharea"))
 #######################################################################################################################################
 
 # sanitboro
 table(is.na(df$sanitboro))
 # Replace NAs with random sanitboro values of the corresponding boroughs and converting to factor:
-df$sanitboro[is.na(df$sanitboro)] <- as.factor(fill_NAs_by_borough(df,"sanitboro"))
+df$sanitboro[is.na(df$sanitboro)] <- as.factor(fill_NAs_by_zipcode(df,"sanitboro"))
 #######################################################################################################################################
 
 # sanitsub
@@ -469,13 +481,13 @@ df <- subset(df, select = -c(version))
 # sanitdistrict
 table(is.na(df$sanitdistrict)) # 978 NAs
 # Replace NAs with random sanitdistrict values of the corresponding boroughs and converting to factor:
-df$sanitdistrict[is.na(df$sanitdistrict)] <- as.factor(fill_NAs_by_borough(df,"sanitdistrict"))
+df$sanitdistrict[is.na(df$sanitdistrict)] <- as.factor(fill_NAs_by_zipcode(df,"sanitdistrict"))
 #######################################################################################################################################
 
 # healthcenterdistrict
 table(is.na(df$healthcenterdistrict)) # 834 NAs
 # Replace NAs with random healthcenterdistrict values of the corresponding boroughs and converting to factor:
-df$healthcenterdistrict[is.na(df$healthcenterdistrict)] <- as.factor(fill_NAs_by_borough(df,"healthcenterdistrict"))
+df$healthcenterdistrict[is.na(df$healthcenterdistrict)] <- as.factor(fill_NAs_by_zipcode(df,"healthcenterdistrict"))
 #######################################################################################################################################
 
 # firm07_flag deleted since more recent 2015 data present:
@@ -540,4 +552,8 @@ df <- subset(df, select = -c(edesigdate))
 
 # Deleting borough since we have borocode. It was used at the beginning to remove erronous values:
 df <- subset(df, select = -c(borough))
+#######################################################################################################################################
 
+# Writing the new partially cleaned CSV file:
+write.csv(df, file = "pluto2.csv")
+#######################################################################################################################################
