@@ -85,7 +85,6 @@ df$landuse <- as.factor(df$landuse)
 summary(as.factor(df$easements))
 summary(as.factor(df$ownertype))
 table(is.na(df$lotarea))
-#example fill_median df$lotarea <- fill_NAs_median(df, "lotarea")
 
 colnames(df)[19]
 
