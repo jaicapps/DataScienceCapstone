@@ -208,21 +208,20 @@ df <- subset(df, select = -c(yearalter1))
 
 
 #Column: yearbuilt
-# Plot the data (we have some zeros)
+# Plot the data (we have some zeros):
 library(ggplot2)
 ggplot(df, aes(x=yearbuilt)) + geom_histogram() +
   labs(title="Year built",x="Year", y = "Count")
 
+table(is.na(df$yearbuilt)) # No NAs
 #Mode function:
 getmode <- function(v) {
   uniqv <- unique(v)
   uniqv[which.max(tabulate(match(v, uniqv)))]
 }
 
-# input mode into 0.
-df$yearbuilt <- ifelse(df$yearbuilt == 0, getmode(df$yearbuilt), df$yearbuilt)
-# input mode into NAs
-df$yearbuilt <- ifelse(is.na(df$yearbuilt), getmode(df$yearbuilt), df$yearbuilt)
+# Replace zeroes with mode when the building is built:
+df$yearbuilt <- ifelse(df$yearbuilt == 0 & df$bldgarea != 0, getmode(df$yearbuilt), df$yearbuilt)
 
 # Check it: 
 # ggplot(df, aes(x=yearbuilt)) + geom_histogram() +
@@ -257,5 +256,6 @@ df <- filter(df, assesstot !=0)
 summary(df$assessland)
 boxplot(df$assessland)
 hist(df$assessland)
+
 
 

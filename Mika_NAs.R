@@ -70,7 +70,7 @@ df$sanitsub <- as.factor(df$sanitsub)
 #zonedist1
 table(is.na(df$zonedist1))
 #delete columns
-df <- df[, !(colnames(df) %in% c('address','zonedist2','zonedist3','zonedist4', 'overlay1', 'overlay2', 'spdist2', 'spdist3', 'splitzone', 'bldgclass', 'easements', 'ownername', 'ct2010', 'cb2010'))]
+df <- df[, !(colnames(df) %in% c('address','zonedist2','zonedist3','zonedist4', 'overlay1', 'overlay2', 'spdist2', 'spdist3', 'splitzone', 'bldgclass', 'easements', 'ownertype', 'ownername', 'ct2010', 'cb2010'))]
 #spdist1
 table(df$spdist1=="")
 df$spdist1 <- as.factor(ifelse(df$spdist1=="", 0, 1))
