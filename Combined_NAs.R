@@ -61,6 +61,16 @@ df$council[is.na(df$council)] <- as.factor(fill_NAs_by_borough(df,"council"))
 
 # zipcode : TODO
 table(is.na(df$zipcode))
+# ZIPCODE dealing with NAs. Transfer NA values into Python and there repair.
+# Choosing NA values in zipcode column and save them into folder zipcode_fill
+########subset(df, is.na(zipcode)) %>% write.csv(., "zipcode_fill/Zips_code.csv")
+# Delete NAs from the data
+df <- filter(df, !is.na(df$zipcode))
+#Read a file which was changed in Python before
+fixed_zips <- read.csv('zipcode_fill/zips_fixed.csv')
+#Rbind old data frame (df) with corrected zipcodes (from Python)
+df <- rbind(df, fixed_zips)
+summary(df$zipcode)
 #######################################################################################################################################
 
 # firecomp
@@ -527,3 +537,7 @@ table(df$edesigdate)
 # Deleted since only 1 date present here:
 df <- subset(df, select = -c(edesigdate))
 #######################################################################################################################################
+
+# Deleting borough since we have borocode. It was used at the beginning to remove erronous values:
+df <- subset(df, select = -c(borough))
+
