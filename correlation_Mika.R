@@ -1,24 +1,30 @@
 df <- read.csv("pluto2.csv")
 
-#chisq.test example
-df$borocode <- as.factor(df$borocode)
-df$healtharea <- as.factor(df$healtharea)
-colnames(df)
-chisq.test(df$healthcenterdistrict, df$borocode, simulate.p.value = TRUE)
-
 #keep variables related with location 
 location_vars <- c("schooldist","council","zipcode","firecomp",
                    "policeprct","healtharea","sanitboro","sanitsub","zonedist1","spdist1",
                    "irrlotcode","borocode","sanitdistrict","healthcenterdistrict","pfirm15_flag")
 
-#test correlation with assestot
+#test correlation with assestot and assesland
 library(dplyr)
-df2 <- select(df, c("assesstot","assessland", location_vars))
-df2[location_vars] <- lapply(df2[location_vars], factor)  
-
-fit <- aov(assesstot ~ schooldist, data=df2)
+df <- select(df, c("assesstot","assessland", location_vars))
+df[location_vars] <- lapply(df[location_vars], factor)  
 
 
+result <- data.frame()
+for(i in location_vars) {
+    print(paste("Test assesstot vs", i))
+    fit <- aov(assesstot ~ df[,i], data=df)
+    print(summary(fit))
+    print(unlist(summary(fit)))
+    result["assesstot",i] <- unlist(summary(fit))["Pr(>F)1"]
+    
+    print(paste("Test assessland vs", i))
+    fit <- aov(assessland ~ df[,i], data=df)
+    print(summary(fit))
+    print(unlist(summary(fit)))
+    result["assessland",i] <- unlist(summary(fit))["Pr(>F)1"]
+}
 
 
 
