@@ -44,7 +44,7 @@ def intersect(df, zipcodes):
     gdfLeft = gpd.read_file(os.path.join(zipcodes))
     gdfRight = gdf
     #Join the data
-    gdfJoined = gpd.sjoin(gdfLeft, gdfRight, how="left", op='intersects')
+    gdfJoined = gpd.sjoin(gdfLeft, gdfRight, how="inner", op='intersects')
     
     
     # PART III

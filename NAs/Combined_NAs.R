@@ -2,8 +2,8 @@ df=read.csv("pluto_18v2_1.csv")
 source("NAs/utils.R")
 colnames(df)
 str(df)
-#######################################################################################################################################
 
+#######################################################################################################################################
 # borough
 class(df$borough)
 summary(df$borough)
@@ -31,14 +31,40 @@ df <- droplevels(df)
 levels(df$borough)
 #######################################################################################################################################
 
+# zipcode
+class(df$zipcode) 
+levels(as.factor(df$zipcode)) # 212 levels. SHOULD IT BE CONVERTED TO FACTOR?!
+table(is.na(df$zipcode))
+# Rows containing zipcode as NA transfered into Python and repaired there.
+# Saving these rows in the CSV file Zips_code in the folder zipcode_fill:
+subset(df, is.na(zipcode)) %>% write.csv(., "zipcode_fill/Zips_code.csv")
+
+# Deleting rows with NAs in zipcode from the data fram df:
+df <- filter(df, !is.na(df$zipcode))
+
+# Read the repaired CSV file which was created through the Python program:
+fixed_zips <- read.csv('zipcode_fill/zips_fixed.csv')
+
+# Row bind the old data frame (df) with the corrected zipcodes obtained through Python:
+df <- rbind(df, fixed_zips)
+summary(df$zipcode)
+summary(df$borough)
+
+df$zipcode <- as.factor(df$zipcode)
+#######################################################################################################################################
+
+
+
 # block
 class(df$block) # Integer and kept as such since it would have 13977 levels as a factor
 table(is.na(df$block)) # No NAs
+df$block <- as.factor(df$block)
 #######################################################################################################################################
 
 # lot
 class(df$lot) # Integer and kept as such since it would have 2545  levels as a factor
 table(is.na(df$lot)) # No NAs
+df$lot <- as.factor(df$lot)
 #######################################################################################################################################
 
 # cd
@@ -69,25 +95,6 @@ table(is.na(df$council))
 df$council[is.na(df$council)] <- (fill_NAs_by_zipcode(df,"council"))
 df$council <- as.factor(df$council)
 levels(df$council) # 51 levels
-#######################################################################################################################################
-
-# zipcode
-class(df$zipcode) 
-levels(as.factor(df$zipcode)) # 212 levels. SHOULD IT BE CONVERTED TO FACTOR?!
-table(is.na(df$zipcode))
-# Rows containing zipcode as NA transfered into Python and repaired there.
-# Saving these rows in the CSV file Zips_code in the folder zipcode_fill:
-subset(df, is.na(zipcode)) %>% write.csv(., "zipcode_fill/Zips_code.csv")
-
-# Deleting rows with NAs in zipcode from the data fram df:
-df <- filter(df, !is.na(df$zipcode))
-
-# Read the repaired CSV file which was created through the Python program:
-fixed_zips <- read.csv('zipcode_fill/zips_fixed.csv')
-
-# Row bind the old data frame (df) with the corrected zipcodes obtained through Python:
-df <- rbind(df, fixed_zips)
-summary(df$zipcode)
 #######################################################################################################################################
 
 # firecomp
@@ -425,6 +432,9 @@ getmode <- function(v) {
 
 # Replace zeroes with mode when the building is built:
 df$yearbuilt <- ifelse(df$yearbuilt == 0 & df$bldgarea != 0, getmode(df$yearbuilt), df$yearbuilt)
+
+#Delete year build 2040
+levels(as.factor(df$yearbuilt))
 #######################################################################################################################################
 
 # yearalter1 & yearalter2
