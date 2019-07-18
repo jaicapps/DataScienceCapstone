@@ -8,9 +8,9 @@ library(doMC)
 no_cores <- max(1, detectCores() - 2)
 # Load the data
 #df <- na.omit(df)
-#write.csv(df, "df.csv")
+
 df <- read.csv("df.csv")
-categorical_vars <- c("block","lot","cd","schooldist","council","zipcode","firecomp",
+categorical_vars <- c("ltdheight","block","lot","cd","schooldist","council","zipcode","firecomp",
 "policeprct","healtharea","sanitboro","sanitsub","zonedist1","spdist1",
 "landuse","ext","proxcode","irrlotcode","lottype","borocode","sanitdistrict",
 "healthcenterdistrict","pfirm15_flag")
