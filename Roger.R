@@ -17,3 +17,9 @@ data <- merge(pluto, families, by="zipcode", all = FALSE)
 data <- merge(data, cen_age_sex, by="zipcode", all = FALSE)
 
 write_csv(data, path = "data_output/data.csv")
+
+
+
+
+
+
