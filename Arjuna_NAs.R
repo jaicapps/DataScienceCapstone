@@ -1,9 +1,62 @@
 #df=read.csv("pluto_18v2_1.csv")
 t(t(colnames(df)))
 
+sum(df$lotarea==0, na.rm = TRUE)
+summary(df$lotarea)
+# Changing zeroes to NAs:
+df$lotarea[df$lotarea==0] <- NA
+# Replace NAs with median according to borough:
+df$lotarea[is.na(df$lotarea)] <- fill_NAs_median(df, "lotarea")
+summary(df$lotarea)
+
+sum(df$bldgarea==0, na.rm = TRUE)
+summary(df$bldgarea)
+# Removing NAs by changing NAs to 5s and then filtering these out:
+df$bldgarea[is.na(df$bldgarea)] <- 5
+df <- filter(df, bldgarea !=5)
+# Bldgarea=0 considered for predicting assessed land value and not for assessed total value.
+
+sum(df$comarea==0, na.rm = TRUE)
+summary(df$comarea)
+# Removing this column since it has 49282 NAs and 700296 zeroes:
+df <- subset(df, select = -c(comarea))
+
+sum(df$resarea==0, na.rm = TRUE)
+summary(df$resarea)
+# Changing zeroes to NAs:
+df$resarea[df$resarea==0] <- NA
+# Replace NAs with median according to borough:
+df$resarea[is.na(df$resarea)] <- fill_NAs_median(df, "resarea")
+summary(df$resarea)
+
+sum(df$officearea==0, na.rm = TRUE)
+summary(df$officearea)
+# Removing this column since it has 49282 NAs and 783721 zeroes:
+df <- subset(df, select = -c(officearea))
+
+sum(df$retailarea==0, na.rm = TRUE)
+summary(df$retailarea)
+# Removing this column since it has 49282 NAs and 745806 zeroes:
+df <- subset(df, select = -c(retailarea))
+
+sum(df$garagearea==0, na.rm = TRUE)
+summary(df$garagearea)
+# Removing this column since it has 49282 NAs and 799879 zeroes:
+df <- subset(df, select = -c(garagearea))
+
+sum(df$strgearea==0, na.rm = TRUE)
+summary(df$strgearea)
+# Removing this column since it has 49282 NAs and 801983 zeroes:
+df <- subset(df, select = -c(strgearea))
+
+sum(df$factryarea==0,na.rm = TRUE)
+summary(df$factryarea)
+# Removing this column since it has 49282 NAs and 802591 zeroes:
+df <- subset(df, select = -c(factryarea))
+
 sum(df$otherarea==0,na.rm = TRUE)
 summary(df$otherarea)
-# Removing this coulumn since it has 49,282 NAs and 790871 zeroes:
+# Removing this coulumn since it has 49282 NAs and 790871 zeroes:
 df <- subset(df, select = -c(otherarea))
 
 # Removing areasource since it provides details about the source from which building

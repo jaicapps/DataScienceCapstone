@@ -259,3 +259,10 @@ boxplot(df$assessland)
 hist(df$assessland)
 
 
+## delete borough
+# cUZ WE HAVE BOROCOD
+df <- subset(df, select = -c(borough))
+
+
+summary(df$resarea)
+str(df$resarea)
