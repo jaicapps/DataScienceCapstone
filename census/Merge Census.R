@@ -1,7 +1,5 @@
 #Read Libraries
-library(readr)
-library(readxl)
-library(dplyr)
+source("libraries.R")
 
 pluto <- read.csv("pluto_18v2_1.csv")
 income <- read.csv("census/census_income.csv")
