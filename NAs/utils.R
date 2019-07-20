@@ -21,7 +21,10 @@ get_median<-function(b, col_per_zipcode, colname){
   return (unlist(col_per_zipcode[index, colname]))
 }
 fill_NAs_median<-function(df, colname) {
-  col_per_zipcode <- df[,c("zipcode", colname)] %>% group_by_at("zipcode") %>% na.omit()  %>% summarise_at(vars(colname), median)
+  col_per_zipcode <- df[,c("zipcode", colname)]
+  col_per_zipcode <- col_per_zipcode[!(is.na(col_per_zipcode[colname])), ]
+  col_per_zipcode <- col_per_zipcode[!(is.na(col_per_zipcode["zipcode"])), ]
+  col_per_zipcode <- col_per_zipcode %>% group_by_at("zipcode") %>% summarise_at(vars(colname), median)
   return (sapply(df["zipcode"][is.na(df[colname])], FUN=get_median, col_per_zipcode, colname))
 }
 
