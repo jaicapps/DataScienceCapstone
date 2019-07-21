@@ -53,6 +53,14 @@ df$zipcode <- as.factor(df$zipcode)
 levels(df$zipcode) # 216 levels
 #######################################################################################################################################
 
+# borocode
+class(df$borocode)
+summary(df$borocode) # No NAs
+# Convert to factor:
+df$borocode <- as.factor(df$borocode)
+levels(df$borocode) # 5 levels
+#######################################################################################################################################
+
 # block
 class(df$block)
 table(is.na(df$block)) # No NAs
@@ -126,10 +134,11 @@ levels(df$healtharea) # 228 levels
 # sanitboro
 class(df$sanitboro)
 table(is.na(df$sanitboro))
-# Replace 259 NAs with random sanitboro values of the corresponding zipcodes and converting to factor:
+# Replace 259 NAs with random sanitboro values of the corresponding zipcodes:
 df$sanitboro[is.na(df$sanitboro)] <- fill_NAs_by_zipcode(df,"sanitboro")
-# Deleting the one NA that still exists since there is only that NA value associated with that zipcode:
-df <- filter(df, !is.na(sanitboro))
+# Replace the 1 NA with a random sanitboro value of the corresponding borough:
+df$sanitboro[is.na(df$sanitboro)] <- fill_NAs_by_borough(df,"sanitboro")
+# Converting to factor:
 df$sanitboro <- as.factor(df$sanitboro)
 levels(df$sanitboro) # 5 levels
 #######################################################################################################################################
@@ -140,8 +149,11 @@ table(is.na(df$sanitsub)) # No NAs
 table(df$sanitsub == " ")
 # Convert 403 blanks to NAs:
 df$sanitsub[df$sanitsub==" "] <- NA
-# Replace NAs with random healtharea values of the corresponding zipcodes and converting to factor:
+# Replace NAs with random sanitsub values of the corresponding zipcodes:
 df$sanitsub[is.na(df$sanitsub)] <- fill_NAs_by_zipcode(df,"sanitsub")
+# Replace the 25 NAs with random sanitsub values of the corresponding boroughs:
+df$sanitsub[is.na(df$sanitsub)] <- fill_NAs_by_borough(df,"sanitsub")
+# Thhe new levels:
 df$sanitsub <- droplevels(df$sanitsub)
 levels(df$sanitsub) # 62 levels
 #######################################################################################################################################
@@ -221,7 +233,8 @@ summary(df$lotarea)
 df$lotarea[df$lotarea==0] <- NA
 # Replace NAs with median according to zipcodes:
 df$lotarea[is.na(df$lotarea)] <- fill_NAs_median(df, "lotarea")
-# Deleting the one NA that still exists since there is only that NA value associated with that zipcode:
+# Replace the 1 NAs with a random lotarea value of the corresponding borough:
+df$lotarea[is.na(df$lotarea)] <- fill_NAs_median_borough(df,"lotarea")
 df <- filter(df, !is.na(lotarea))
 #######################################################################################################################################
 
@@ -503,14 +516,6 @@ class(df$facilfar)
 summary(df$facilfar) # No NAs
 #######################################################################################################################################
 
-# borocode
-class(df$borocode)
-summary(df$borocode) # No NAs
-# Convert to factor:
-df$borocode <- as.factor(df$borocode)
-levels(df$borocode) # 5 levels
-#######################################################################################################################################
-
 # bbl deleted since it is a combination of borough, block, and lot information:
 df <- subset(df, select = -c(bbl))
 #######################################################################################################################################
@@ -523,7 +528,7 @@ df <- subset(df, select = -c(condono))
 df <- subset(df, select = -c(tract2010))
 #######################################################################################################################################
 
-# xcoord and ycoor kept for visualization but not predictions.
+# xcoord and ycoord kept for visualization but not predictions.
 # zonemap deleted since it is not required for visualization:
 df <- subset(df, select = -c(zmcode))
 #######################################################################################################################################
@@ -580,8 +585,11 @@ df <- subset(df, select = -c(version))
 # sanitdistrict
 class(df$sanitdistrict)
 table(is.na(df$sanitdistrict))
-# Replace 221 NAs with random sanitdistrict values of the corresponding zipcodes and converting to factor:
+# Replace 221 NAs with random sanitdistrict values of the corresponding zipcodes:
 df$sanitdistrict[is.na(df$sanitdistrict)] <- fill_NAs_by_zipcode(df,"sanitdistrict")
+# Replace the 1 NA with a random sanitdistrict value of the corresponding borough:
+df$sanitdistrict[is.na(df$sanitdistrict)] <- fill_NAs_by_borough(df,"sanitdistrict")
+# Converting to factor:
 df$sanitdistrict <- as.factor(df$sanitdistrict)
 levels(df$sanitdistrict) # 27 levels
 #######################################################################################################################################
@@ -662,5 +670,5 @@ df <- subset(df, select = -c(borough))
 #######################################################################################################################################
 
 # Writing the new partially cleaned CSV file:
-write.csv(df, file = "pluto2.csv")
+write.csv(df, file = "pluto2.csv", row.names=FALSE)
 #######################################################################################################################################
