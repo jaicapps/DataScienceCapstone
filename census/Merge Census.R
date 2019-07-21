@@ -30,16 +30,6 @@ for(i in 1:nrow(data)) {
   }
 }
 
+data <- subset(data, select = -c(mean_income_fam, mean_income_non))
+
 write_csv(data, path = "pluto3.csv")
-
-
-
-
-
-
-
-
-
-
-
-
