@@ -2,7 +2,6 @@ df=read.csv("pluto_18v2_1.csv")
 source("NAs/utils.R")
 colnames(df)
 str(df)
-
 #######################################################################################################################################
 # borough
 class(df$borough)
@@ -59,7 +58,7 @@ class(df$block)
 table(is.na(df$block)) # No NAs
 # Converting to factor:
 df$block <- as.factor(df$block)
-levels(df$block)
+levels(df$block) # 13968 levels
 #######################################################################################################################################
 
 # lot
@@ -67,92 +66,104 @@ class(df$lot)
 table(is.na(df$lot)) # No NAs
 # Converting to factor:
 df$lot <- as.factor(df$lot)
-levels(df$lot)
+levels(df$lot) # 2521 levels
 #######################################################################################################################################
 
 # cd
 class(df$cd)
 table(is.na(df$cd))
-# Replace NAs with random cd values of the corresponding zipcodes:
+# Replace 11 NAs with random cd values of the corresponding zipcodes:
 df$cd[is.na(df$cd)] <- fill_NAs_by_zipcode(df,"cd")
 # Removing the first digit of cd since it refers to the borough code which is information present in another
 # column and converting to factor:
 df$cd <- as.factor(substring(as.character(df$cd),2))
-levels(df$cd)
+levels(df$cd) # 34 levels
 #######################################################################################################################################
 
 # ct2010 and cb2010 are deleted since we only use zipcode to match to census data.
 # schooldist
 class(df$schooldist)
 table(is.na(df$schooldist))
-# Replace NAs with random schooldist values of the corresponding zipcodes and converting to factor:
+# Replace 78 NAs with random schooldist values of the corresponding zipcodes and converting to factor:
 df$schooldist[is.na(df$schooldist)] <- fill_NAs_by_zipcode(df,"schooldist")
 df$schooldist <- as.factor(df$schooldist)
-levels(df$schooldist)
+levels(df$schooldist) # 32 levels
 #######################################################################################################################################
 
 # council
 class(df$council)
 table(is.na(df$council))
-# Replace NAs with random council values of the corresponding zipcodes and converting to factor:
+# Replace 11 NAs with random council values of the corresponding zipcodes and converting to factor:
 df$council[is.na(df$council)] <- (fill_NAs_by_zipcode(df,"council"))
 df$council <- as.factor(df$council)
-levels(df$council)
+levels(df$council) # 51 levels
 #######################################################################################################################################
 
 # firecomp
 class(df$firecomp)
 table(is.na(df$firecomp)) # No NAs
-levels(df$firecomp)
+levels(df$firecomp) # 349 levels
 #######################################################################################################################################
 
 # policeprct
 class(df$policeprct)
 table(is.na(df$policeprct))
-# Replace NAs with random policeprct values of the corresponding zipcodes and converting to factor:
+# Replace 83 NAs with random policeprct values of the corresponding zipcodes and converting to factor:
 df$policeprct[is.na(df$policeprct)] <- fill_NAs_by_zipcode(df,"policeprct")
 df$policeprct <- as.factor(df$policeprct)
-levels(df$policeprct)
+levels(df$policeprct) # 82 levels
 #######################################################################################################################################
 
 # healtharea
 class(df$healtharea)
 table(is.na(df$healtharea))
-# Replace NAs with random healtharea values of the corresponding zipcodes and converting to factor:
+# Replace 82 NAs with random healtharea values of the corresponding zipcodes and converting to factor:
 df$healtharea[is.na(df$healtharea)] <- fill_NAs_by_zipcode(df,"healtharea")
 df$healtharea <- as.factor(df$healtharea)
-levels(df$healtharea)
+levels(df$healtharea) # 228 levels
 #######################################################################################################################################
 
 # sanitboro
 class(df$sanitboro)
 table(is.na(df$sanitboro))
-# Replace NAs with random sanitboro values of the corresponding zipcodes and converting to factor:
+# Replace 259 NAs with random sanitboro values of the corresponding zipcodes and converting to factor:
 df$sanitboro[is.na(df$sanitboro)] <- fill_NAs_by_zipcode(df,"sanitboro")
 # Deleting the one NA that still exists since there is only that NA value associated with that zipcode:
 df <- filter(df, !is.na(sanitboro))
 df$sanitboro <- as.factor(df$sanitboro)
-levels(df$sanitboro)
+levels(df$sanitboro) # 5 levels
 #######################################################################################################################################
 
 # sanitsub
+class(df$sanitsub)
 table(is.na(df$sanitsub)) # No NAs
 table(df$sanitsub == " ")
-# Convert blanks to NAs:
+# Convert 403 blanks to NAs:
 df$sanitsub[df$sanitsub==" "] <- NA
 # Replace NAs with random healtharea values of the corresponding zipcodes and converting to factor:
 df$sanitsub[is.na(df$sanitsub)] <- fill_NAs_by_zipcode(df,"sanitsub")
 df$sanitsub <- droplevels(df$sanitsub)
-# Converting to factor:
-df$sanitsub <- as.factor(df$sanitsub)
-levels(df$sanitsub)
+levels(df$sanitsub) # 62 levels
 #######################################################################################################################################
 
 # address is deleted since it is textual and not required for the predictions.
 # zonedist1
 class(df$zonedist1)
 table(is.na(df$zonedist1)) # No NAs
-levels(df$zonedist1)
+table(df$zonedist1=="")
+# Replacing 967 blanks with NAs:
+df$zonedist1[df$zonedist1==""] <- NA
+# Replacing NAs with random zonedist1 values for the corresponding zipcodes:
+df$zonedist1[is.na(df$zonedist1)] <- fill_NAs_by_zipcode(df,"zonedist1")
+df$zonedist1 <- droplevels(df$zonedist1)
+# Converting to R for residential, C for commercial, M for manufacturing, MR for mixed-manufacturing and residential, 
+# BPC for Battery Park City:
+df$zonedist1 <- as.factor(ifelse(grepl("/",as.character(df$zonedist1)),"MR",
+                                       ifelse(grepl("M",as.character(df$zonedist1)),"M",
+                                              ifelse(grepl("C",as.character(df$zonedist1)),"C",
+                                                     ifelse(grepl("R",as.character(df$zonedist1)),"R",
+                                                            "BPA")))))
+levels(df$zonedist1) # 5 levels
 #######################################################################################################################################
 
 # zonedist2, zonedist3, zonedist4, overlay1, and overlay2 are deleted since they provide too 
@@ -160,7 +171,7 @@ levels(df$zonedist1)
 # spdist1
 class(df$spdist1)
 table(df$spdist1=="")
-# Replacing blanks with 0s and non-blank values with 1 and converting to factor:
+# Replacing 756230 blanks with 0s and non-blank values with 1 and converting to factor:
 df$spdist1 <- as.factor(ifelse(df$spdist1=="", 0, 1))
 levels(df$spdist1)
 #######################################################################################################################################
@@ -169,7 +180,7 @@ levels(df$spdist1)
 # ltdheight
 class(df$ltdheight)
 table(df$ltdheight=="")
-# Replacing blanks with 0s and non-blank values with 1 and converting to factor:
+# Replacing 854316 blanks with 0s and non-blank values with 1 and converting to factor:
 df$ltdheight <- as.factor(ifelse(df$ltdheight=="", 0, 1))
 levels(df$ltdheight)
 #######################################################################################################################################
@@ -179,23 +190,23 @@ levels(df$ltdheight)
 # landuse
 class(df$landuse)
 summary(as.factor(df$landuse))
-# Replace NAs with 0s for unknown category:
+# Replace 2359 NAs with 0s for unknown category:
 df$landuse[is.na(df$landuse)] <- "0"
 # Convert to factor:
 df$landuse <- as.factor(df$landuse)
-levels(df$landuse)
+levels(df$landuse) # 12 levels
 #######################################################################################################################################
 
 # easements:
 class(df$easements)
 summary(as.factor(df$easements))
-# Deleted since 854467 zeroes.
+# Deleted since 853597 zeroes.
 #######################################################################################################################################
 
 # ownertype:
 class(df$ownertype)
 summary(df$ownertype)
-# Deleted since 824226 blanks.
+# Deleted since 823448 blanks.
 #######################################################################################################################################
 
 # Delete the above chosen columns to be deleted:
@@ -206,27 +217,28 @@ df <- df[, !(colnames(df) %in% c('address','zonedist2','zonedist3','zonedist4', 
 class(df$lotarea)
 table(df$lotarea==0)
 summary(df$lotarea)
-# Changing zeroes to NAs:
+# Changing 3153 zeroes to NAs: (Also we have 144 NAs)
 df$lotarea[df$lotarea==0] <- NA
 # Replace NAs with median according to zipcodes:
 df$lotarea[is.na(df$lotarea)] <- fill_NAs_median(df, "lotarea")
+# Deleting the one NA that still exists since there is only that NA value associated with that zipcode:
+df <- filter(df, !is.na(lotarea))
 #######################################################################################################################################
 
 # bldgarea
 class(df$bldgarea)
-table(df$bldgarea==0)
+table(df$bldgarea==0) # Bldgarea=0 considered for predicting assessed land value and not for assessed total value
 summary(df$bldgarea)
 # Removing NAs by changing NAs to 5s and then filtering these out:
 df$bldgarea[is.na(df$bldgarea)] <- 5
 df <- filter(df, bldgarea !=5)
-# Bldgarea=0 considered for predicting assessed land value and not for assessed total value.
 #######################################################################################################################################
 
 # comarea
 class(df$comarea)
 table(df$comarea==0)
 summary(df$comarea)
-# Removing this column since it has a vast majority of 0s and NAs:
+# Removing this column since it has a vast majority of 0s and NAs (700290 0s and 47715 NAs):
 df <- subset(df, select = -c(comarea))
 #######################################################################################################################################
 
@@ -234,8 +246,6 @@ df <- subset(df, select = -c(comarea))
 class(df$resarea)
 table(df$resarea==0)
 summary(df$resarea)
-# Changing zeroes to NAs:
-df$resarea[df$resarea==0] <- NA
 # Since a total of nearly 100,000 rows contain 0 or NA values and as these cannot be replaced with the medians for 
 # each zipcode without biasing the prediction model, this variable is removed:
 df <- subset(df, select = -c(resarea))
@@ -245,7 +255,7 @@ df <- subset(df, select = -c(resarea))
 class(df$officearea)
 table(df$officearea==0)
 summary(df$officearea)
-# Removing this column since it has a vast majority of 0s and NAs:
+# Removing this column since it has a vast majority of 0s and NAs (783666 0s and 47715 NAs):
 df <- subset(df, select = -c(officearea))
 #######################################################################################################################################
 
@@ -253,7 +263,7 @@ df <- subset(df, select = -c(officearea))
 class(df$retailarea)
 table(df$retailarea==0)
 summary(df$retailarea)
-# Removing this column since it has a vast majority of 0s and NAs:
+# Removing this column since it has a vast majority of 0s and NAs (745749 0s and 47715 NAs):
 df <- subset(df, select = -c(retailarea))
 #######################################################################################################################################
 
@@ -261,7 +271,7 @@ df <- subset(df, select = -c(retailarea))
 class(df$garagearea)
 table(df$garagearea==0)
 summary(df$garagearea)
-# Removing this column since it has a vast majority of 0s and NAs:
+# Removing this column since it has a vast majority of 0s and NAs (799824 0s and 47715 NAs):
 df <- subset(df, select = -c(garagearea))
 #######################################################################################################################################
 
@@ -269,7 +279,7 @@ df <- subset(df, select = -c(garagearea))
 class(df$strgearea)
 table(df$strgearea==0)
 summary(df$strgearea)
-# Removing this column since it has a vast majority of 0s and NAs:
+# Removing this column since it has a vast majority of 0s and NAs (801926 0s and 47715 NAs):
 df <- subset(df, select = -c(strgearea))
 #######################################################################################################################################
 
@@ -277,14 +287,14 @@ df <- subset(df, select = -c(strgearea))
 class(df$factryarea)
 table(df$factryarea==0)
 summary(df$factryarea)
-# Removing this column since it has a vast majority of 0s and NAs:
+# Removing this column since it has a vast majority of 0s and NAs (802537 0s and 47715 NAs):
 df <- subset(df, select = -c(factryarea))
 #######################################################################################################################################
 
 # otherarea
 table(df$otherarea==0)
 summary(df$otherarea)
-# Removing this coulumn since it has a vast majority of 0s and NAs:
+# Removing this coulumn since it has a vast majority of 0s and NAs (790856 0s and 47715 NAs):
 df <- subset(df, select = -c(otherarea))
 #######################################################################################################################################
 
@@ -297,14 +307,14 @@ df <- subset(df, select = -c(areasource))
 # numbldgs
 class(df$numbldgs)
 summary(df$numbldgs)
-# Replacing NAs with medians for each corresponding zipcode:
+# Replacing 144 NAs with medians for each corresponding zipcode:
 df$numbldgs[is.na(df$numbldgs)] <- fill_NAs_median(df, "numbldgs")
 #######################################################################################################################################
 
 # numfloors
 class(df$numfloors)
 summary(df$numfloors)
-# Replacing NAs with medians for each corresponding zipcode:
+# Replacing 144 NAs with medians for each corresponding zipcode:
 df$numfloors[is.na(df$numfloors)] <- fill_NAs_median(df, "numfloors")
 #######################################################################################################################################
 
@@ -313,40 +323,39 @@ class(df$unitsres)
 summary(df$unitsres)
 # Replacing NAs with medians for each corresponding zipcode:
 df$unitsres[is.na(df$unitsres)] <- fill_NAs_median(df, "unitsres")
+df$unitsres <- unlist(df$unitsres)
 #######################################################################################################################################
 
 # unitstotal
 class(df$unitstotal)
-summary(df$unitstotal)
-# Replacing NAs with medians for each corresponding zipcode:
-df$unitstotal[is.na(df$unitstotal)] <- fill_NAs_median(df, "unitstotal")
+summary(df$unitstotal) # No NAs
 #######################################################################################################################################
 
 # lotfront
 class(df$lotfront)
 summary(df$lotfront)
-# Replacing NAs with medians for each corresponding zipcode:
+# Replacing 144 NAs with medians for each corresponding zipcode:
 df$lotfront[is.na(df$lotfront)] <- fill_NAs_median(df, "lotfront")
 #######################################################################################################################################
 
 # lotdepth
 class(df$lotdepth)
 summary(df$lotdepth)
-# Replacing NAs with median for each corresponding zipcode:
+# Replacing 1928 NAs with median for each corresponding zipcode:
 df$lotdepth[is.na(df$lotdepth)] <- fill_NAs_median(df, "lotdepth")
 #######################################################################################################################################
 
 # bldgfront
 class(df$bldgfront)
 summary(df$bldgfront)
-# Replacing NAs with medians for each corresponding zipcode:
+# Replacing 144 NAs with medians for each corresponding zipcode:
 df$bldgfront[is.na(df$bldgfront)] <- fill_NAs_median(df, "bldgfront")
 #######################################################################################################################################
 
 # bldgdepth
 class(df$bldgdepth)
 summary(df$bldgdepth)
-# Replacing NAs with medians for each corresponding zipcode:
+# Replacing 144 NAs with medians for each corresponding zipcode:
 df$bldgdepth[is.na(df$bldgdepth)] <- fill_NAs_median(df, "bldgdepth")
 #######################################################################################################################################
 
@@ -400,6 +409,7 @@ df <- subset(df, select = -c(bsmtcode))
 # assessland
 class(df$assessland)
 summary(df$assessland)
+table(df$assessland == 0)
 boxplot(df$assessland)
 hist(df$assessland)
 # Replace NAs by zero:
@@ -447,6 +457,7 @@ df$yearbuilt <- ifelse(df$yearbuilt == 0 & df$bldgarea != 0, getmode(df$yearbuil
 levels(as.factor(df$yearbuilt))
 # Delete the row containing yearbuilt as 2040:
 df <- filter(df, yearbuilt !=2040)
+levels(as.factor(df$yearbuilt)) # 219 levels
 #######################################################################################################################################
 
 # yearalter1 & yearalter2
@@ -463,13 +474,13 @@ df <- subset(df, select = -c(yearalter1))
 
 # histdist
 table(df$histdist == "")
-# Deleted since a vast majority of blanks:
+# Deleted since 823560 blanks:
 df <- subset(df, select = -c(histdist))
 #######################################################################################################################################
 
 # landmark
 table(df$landmark == "")
-# Delted since a vast majority of blanks:
+# Delted since 852456 blanks:
 df <- subset(df, select = -c(landmark))
 #######################################################################################################################################
 
@@ -477,10 +488,19 @@ df <- subset(df, select = -c(landmark))
 df <- subset(df, select = -c(builtfar))
 #######################################################################################################################################
 
-# Variables residfar, commfar, and failfar deleted since they provide unnecessary extra information:
-df <- subset(df, select = -c(residfar))
-df <- subset(df, select = -c(commfar))
-df <- subset(df, select = -c(facilfar))
+# residfar
+class(df$residfar)
+summary(df$residfar) # No NAs
+#######################################################################################################################################
+
+# commfar
+class(df$commfar)
+summary(df$commfar) # No NAs
+#######################################################################################################################################
+
+# facilfar
+class(df$facilfar)
+summary(df$facilfar) # No NAs
 #######################################################################################################################################
 
 # borocode
@@ -488,7 +508,7 @@ class(df$borocode)
 summary(df$borocode) # No NAs
 # Convert to factor:
 df$borocode <- as.factor(df$borocode)
-levels(df$borocode)
+levels(df$borocode) # 5 levels
 #######################################################################################################################################
 
 # bbl deleted since it is a combination of borough, block, and lot information:
@@ -523,6 +543,7 @@ df <- subset(df, select = -c(taxmap))
 # edesignum
 # E codes mean that there is some hazardous material affecting this property. These are converted to 1 here.
 class(df$edesignum)
+table(is.na(df$edesignum))
 df$edesignum <- as.character(df$edesignum) # Convert to character
 df$edesignum[df$edesignum == ""] <- "0" # If empty, then replace with 0
 df$edesignum[df$edesignum != "0"] <- "1" # If not zero, then replace with 1
@@ -542,7 +563,7 @@ df <- subset(df, select = -c(appdate))
 
 # mappluto_f
 summary(df$mappluto_f)
-# Deleted since it contains a vast majority of NAs:
+# Deleted since it contains 853862 NAs:
 df <- subset(df, select = -c(mappluto_f))
 #######################################################################################################################################
 
@@ -559,19 +580,19 @@ df <- subset(df, select = -c(version))
 # sanitdistrict
 class(df$sanitdistrict)
 table(is.na(df$sanitdistrict))
-# Replace NAs with random sanitdistrict values of the corresponding zipcodes and converting to factor:
+# Replace 221 NAs with random sanitdistrict values of the corresponding zipcodes and converting to factor:
 df$sanitdistrict[is.na(df$sanitdistrict)] <- fill_NAs_by_zipcode(df,"sanitdistrict")
 df$sanitdistrict <- as.factor(df$sanitdistrict)
-levels(df$sanitdistrict)
+levels(df$sanitdistrict) # 27 levels
 #######################################################################################################################################
 
 # healthcenterdistrict
 class(df$healthcenterdistrict)
 table(is.na(df$healthcenterdistrict))
-# Replace NAs with random healthcenterdistrict values of the corresponding zipcodes and converting to factor:
+# Replace 74 NAs with random healthcenterdistrict values of the corresponding zipcodes and converting to factor:
 df$healthcenterdistrict[is.na(df$healthcenterdistrict)] <- fill_NAs_by_zipcode(df,"healthcenterdistrict")
 df$healthcenterdistrict <- as.factor(df$healthcenterdistrict)
-levels(df$healthcenterdistrict)
+levels(df$healthcenterdistrict) # 37 levels
 #######################################################################################################################################
 
 # firm07_flag deleted since more recent 2015 data present:
@@ -581,7 +602,7 @@ df <- subset(df, select = -c(firm07_flag))
 # pfirm15_flag indicates if a tax lot is vulnerable to flooding.
 class(df$pfirm15_flag)
 table(is.na(df$pfirm15_flag))
-# 92% of the data is NAs and these are replaced with 0s:
+# 789460 NAs and these are replaced with 0s:
 df$pfirm15_flag[is.na(df$pfirm15_flag)] <- 0
 # Convert to factor:
 df$pfirm15_flag <- as.factor(df$pfirm15_flag)
