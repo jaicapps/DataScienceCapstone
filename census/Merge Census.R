@@ -17,9 +17,14 @@ data$mean_income_non[is.na(data$mean_income_non)] <- fill_NAs_median_borough(dat
 table(is.na(data$mean_income_fam))
 table(is.na(data$mean_income_non))
 
+min_income_fam <- min(data$mean_income_fam)
+max_income_fam <- max(data$mean_income_fam)
+min_income_non <- min(data$mean_income_non)
+max_income_non <- max(data$mean_income_non)
+
 get_income <- function(mean_income_fam, mean_income_non) {
-  income_fam <- rtriangle(1,a=10000,b=200000,c = mean_income_fam)
-  income_non <- rtriangle(1,a=10000,b=200000,c = mean_income_non)
+  income_fam <- rtriangle(1,a=min_income_fam,b=max_income_fam,c = mean_income_fam)
+  income_non <- rtriangle(1,a=min_income_non,b=max_income_non,c = mean_income_non)
   return (sample(c(income_fam, income_non), size=1))
 }
 data["income"] <- 0
