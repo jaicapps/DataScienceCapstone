@@ -1,12 +1,16 @@
-# Read data and change types:
-df <- read.csv("pluto2.csv")
+#Read functions
 source("data_type_fun.R")
 source("libraries.R")
-df <- data_type(df)
+
+# Read data and change types:
+df <- read.csv("pluto2.csv")
+df <- data_type(df) # function changing data types
 
 
 # Choose columns with small level (lower than 53)
 df <- subset(df ,select = -c(block, lot, zipcode, firecomp, policeprct, healtharea,sanitsub))
+#Get rid of coordinates columns (x and y)
+df <- subset(df, select = -c(xcoord, ycoord))
 
 # Sample for test
 sample <- sample_n(df, 100)
