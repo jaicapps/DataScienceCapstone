@@ -5,6 +5,7 @@ col_var <- c("block","lot","cd","schooldist","council","zipcode","firecomp","pol
              "ext","proxcode","irrlotcode","lottype","borocode","edesignum","sanitdistrict",
              "healthcenterdistrict", "pfirm15_flag")
 #keep numeric vars
-df <- select(df, -c(col_var))
+df <- select(df, -c(col_var, "xcoord", "ycoord"))
 
-cor(df)
+source("http://www.sthda.com/upload/rquery_cormat.r")
+rquery.cormat(df)
