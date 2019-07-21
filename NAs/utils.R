@@ -28,3 +28,20 @@ fill_NAs_median<-function(df, colname) {
   return (sapply(df["zipcode"][is.na(df[colname])], FUN=get_median, col_per_zipcode, colname))
 }
 
+
+get_median_borough<-function(b, col_per_borough, colname){
+  index <- which(col_per_borough["borocode"]==b)
+  if (length(index)==0) { # If all rows have NAs for that colname for the given zipcode, return NA.
+    return (NA) # These NAs are delted in the main code.
+  }
+  return (unlist(col_per_borough[index, colname]))
+}
+
+fill_NAs_median_borough<-function(df, colname) {
+  col_per_borough <- df[,c("borocode", colname)]
+  col_per_borough <- col_per_borough[!(is.na(col_per_borough[colname])), ]
+  col_per_borough <- col_per_borough[!(is.na(col_per_borough["borocode"])), ]
+  col_per_borough <- col_per_borough %>% group_by_at("borocode") %>% summarise_at(vars(colname), median)
+  return (sapply(df["borocode"][is.na(df[colname])], FUN=get_median_borough, col_per_borough, colname))
+}
+
