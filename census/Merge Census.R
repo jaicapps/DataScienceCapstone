@@ -37,4 +37,12 @@ for(i in 1:nrow(data)) {
 
 data <- subset(data, select = -c(mean_income_fam, mean_income_non))
 
+# Put zeroes for income when bldgarea is zero:
+table(data$income==0)
+table(data$bldgarea == 0)
+table(data$bldgarea==0 & data$income==0)
+# Hence, the remaining (39430 - 37445 = 1985) rows are replaced with income = 0:
+data$income[data$bldgarea == 0] <- 0
+
 write_csv(data, path = "pluto3.csv")
+summary(data)
