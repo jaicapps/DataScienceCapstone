@@ -19,3 +19,23 @@ for (i in numeric_vars) {
   }
 }
 write.csv(result,"anova_all.csv")
+
+### After receiving results, read the data again.
+anova <- read.csv("correlation/anova_all.csv")
+
+# Delete assess total and assesset land from data
+anova <- anova[!(anova$X %in% c('assesstot', 'assessland')), ]
+
+#Tukey Test
+
+library(agricolae)
+data("PlantGrowth")
+
+plant.lm <- lm(weight ~ group, data = PlantGrowth)
+plant.av <- aov(plant.lm)
+summary(plant.av)
+
+
+anova2 <- anova<0.05
+table(anova2)
+class(anova2)
