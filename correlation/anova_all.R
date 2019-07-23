@@ -15,7 +15,7 @@ for (i in numeric_vars) {
     fit <- aov(df[,i] ~ df[,j], data=df)
     print(summary(fit))
     print(unlist(summary(fit)))
-    result[i,j] <- unlist(summary(fit))["Pr(>F)1"]
+    result[i,j] <- paste(unlist(summary(fit))["F value1"], unlist(summary(fit))["Pr(>F)1"], sep=",")
   }
 }
 write.csv(result,"anova_all.csv")
