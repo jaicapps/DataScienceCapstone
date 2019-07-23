@@ -1,4 +1,4 @@
-df <- read.csv("../pluto3.csv")
+df <- read.csv("pluto3.csv")
 categorical_vars <- c("lot","cd","schooldist","council","zipcode","firecomp","policeprct",
                       "healtharea","sanitboro","sanitsub","zonedist1","spdist1","ltdheight","landuse",
                       "ext","proxcode","irrlotcode","lottype","borocode","edesignum","sanitdistrict",
