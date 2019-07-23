@@ -4,6 +4,15 @@ df1 <- df
 for (i in colnames(df1)) {
   df1[,i] <- gsub(".*,(.*)", "\\1", df1[,i])
 }
+
+a <- colnames(df1)
+df3 <- data.frame()
+for (i in 1:24){
+  for (j in 1:(25-i)){
+    df3[a[i],a[j]] <- df1[i,j]
+  }
+}
+
 df2 <- df
 for (i in colnames(df2)) {
   df2[,i] <- gsub("(.*),.*", "\\1", df2[,i])
