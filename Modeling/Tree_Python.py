@@ -25,6 +25,36 @@ for i in to_factors:
 dataset = dataset.drop('xcoord', axis=1)
 dataset = dataset.drop('ycoord', axis=1)
 
+
+
+for i in to_factors: 
+    conv = pd.get_dummies(dataset[i])
+    # Drop column B as it is now encoded
+    dataset = df.drop(i,axis = 1)
+    # Join the encoded df
+    dataset = dataset.join(conv)
+    print(i) 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## All below is done with LabelEncoder (with assumes ordinal data)
+
+
 #Pandas doesnt like values such as "L190" even when it's categorical.
 #Here we convert such values into numbers, so "L190" can be coded for example as: 1, etc.
 # Loead the function LabelEncoder.
