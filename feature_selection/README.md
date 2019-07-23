@@ -1,6 +1,7 @@
 ## Install dependencies
-module load intel R
-module list
+. /home/mikleal/conda/etc/profile.d/conda.sh
+conda activate
+R
 
 install.packages("tidyverse", depdendencies=TRUE)
 install.packages("caret", depdendencies=TRUE)
@@ -17,3 +18,4 @@ library(doMC)
 
 glmnet, by default, standardizes the predictor variables before fitting the model.
 https://think-lab.github.io/d/205/#5
+
