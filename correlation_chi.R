@@ -1,13 +1,13 @@
 ####Chi-Square Test
 source("libraries.R")
 source("data_type_fun.R")
-df <- read.csv("pluto3.csv")
+df <- read.csv("pluto2.csv")
 df <- data_type(df)
 
-col_var <- c("block","lot","cd","schooldist","council","zipcode","firecomp","policeprct",
+col_var <- c("lot","cd","schooldist","council","zipcode","firecomp","policeprct",
              "healtharea","sanitboro","sanitsub","zonedist1","spdist1","ltdheight","landuse",
              "ext","proxcode","irrlotcode","lottype","borocode","edesignum","sanitdistrict",
-             "healthcenterdistrict", "pfirm15_flag")
+             "healthcenterdistrict", "pfirm15_flag","block")
 
 row_var <- col_var
 
