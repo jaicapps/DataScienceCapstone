@@ -7,4 +7,6 @@ pluto_18v2_1.csv
 .RData
 .Rproj.user
 .Rapp.history
+df_model.csv
+result_of_Model_Based.rds
 
