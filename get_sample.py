@@ -13,35 +13,35 @@ from sklearn.model_selection import train_test_split
 df = pd.read_csv("pluto3.csv")
 print(df.columns)
 
-#to try first keep few cols
-df = df[["block", "healtharea", "income","assesstot"]]
-
 #define categorical variables
-cat_vars = ["block"]
-predictors = ["block", "healtharea", "income"]
+df["borocode_block"] = df["borocode"].astype(str) + df["block"].astype(str)
+cat_vars = ["borocode_block"]
+predictors = ["healtharea", "income"]
 target = ["assesstot"]
+#drop assessland
+df.drop('assessland', axis=1, inplace=True)
+df.drop('borocode', axis=1, inplace=True)
+df.drop('block', axis=1, inplace=True)
 
-#transform to categorical variables
+#transform to categorical variables, variables choosen to take proportion
 df[cat_vars] = df[cat_vars].apply(lambda x:x.astype('category'))
 
-#calculate proportions
-a = df[['block']].groupby(["block"]).size()
+#calculate proportions and remove the ones that has less than 2 in one class
+a = df[['borocode_block']].groupby(["borocode_block"]).size()
 to_remove = a[a<2]
 a = a[a>1]
-df = df.loc[df['block'].isin(a.index.values)]
-df['block'] = df['block'].cat.remove_categories(to_remove.index.values)
-
-#drop rows that has only 1 
+df = df.loc[df['borocode_block'].isin(a.index.values)]
+df['borocode_block'] = df['borocode_block'].cat.remove_categories(to_remove.index.values)
 
 #set seet
 RANDOM_SEED = 101
-#transform to array
+#transform predictors and target to array
 x = np.array(df[predictors])
 y = np.array(df[target])
-#get only categorical values
+#get values for proportion variables
 categorical_values = df.select_dtypes(include=['category'])
 
-#TODO: choose train_size and test_size. For now choose 20% for training and 5% for test
+#choose 20% for training and 5% for test
 #reference: https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html
 X_train, X_test, y_train, y_test = train_test_split(x, y, train_size=0.2, 
                                                     test_size=0.05, 
