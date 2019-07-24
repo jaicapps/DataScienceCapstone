@@ -65,3 +65,7 @@ gplots::balloonplot(df3, main ="Independence Test", xlab ="", ylab="",
                     label = FALSE, show.margins = FALSE, colsrt=90, dotcolor = df3,
                     hide.duplicates=TRUE, text.size=0.7)
 # Remember that lotarea is indepedent with respect to spdist1, ltdheight, and edesignum.
+
+# Two possibilities:
+# 1. Keeping commfar numerical variable along with categorical variables ltdheight, lottype,
+# pfirm15_flag, and numerical variables lotarea, bldgarea, numbldgs, 
