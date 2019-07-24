@@ -1,8 +1,10 @@
 # Chi-squared test for independence between categorical variables:
-
+library("dplyr")
 library("gdata")
 df <- read.csv("correlation/factors_chi2.csv")
 row.names(df) <- colnames(df)
+df <- select(df, -c("lot","block"))
+df <- df[!rownames(df) %in% c("lot","block"), ]
 
 # p values:
 df1 <- df
@@ -29,41 +31,49 @@ for (i in 1:dim(df1)[1]){
     }
   }
 }
+# No independence.
 
 # Upper triangle values of chi-squared values saved in a data frame:
-d <- as.data.frame(upperTriangle(df2, diag = TRUE, byrow = TRUE))
+d <- as.data.frame(upperTriangle(df2, diag = FALSE, byrow = TRUE))
 colnames(d) <- "value"
 
-library(ggplot2)
-ggplot(data=d, aes(d$value)) + geom_histogram()
-ggplot(data=d, aes(d$value)) + geom_histogram() + ylim(0,5)
-ggplot(data=d, aes(d$value)) + geom_histogram() + ylim(0,10) + xlim(0,3e+9)
-dt <- as.table(as.matrix(df2))
-
-# Choosing a threshold chi-squared value based on the above graphs:
-m = 8.0e+09
+# Choosing a threshold chi-squared value:
+boxplot(d$value)
+abline(h=quantile(d$value,0.75),col="red",lty=2)
+m <- as.numeric(quantile(d$value, 0.75))
+table(d$value>m)
 
 # Displaying those points that are greater than this threshold in skyblue color:
-a <- colnames(df2)
 df3 <- df2
-for (i in a){
-  for (j in a){
-    if (df3[i, j]>=m) {
-      df3[i, j] <- "skyblue"
-    }
-    else{
-      df3[i,j] <- "white"
-    }
-  }
-}
+df3[df3>m] <- "red"
+df3[df3!="red"] <- "white"
 
-# White for the lower triangle (without diagonal), so that only upper triangle is displayed in the plot:
-df3[lower.tri(df3, diag = FALSE)] <- "white" # diag = FALSE by default
-df3 <- as.table(as.matrix(df3))
+# White for the upper triangle so that only lower triangle is displayed:
+df3[upper.tri(df3, diag = "TRUE")] <- "white" # Removing the dependencies of a variable with itself by coloring white for the diagonal.
+df3 <- as.table(t(as.matrix(df3)))
 
 # Balloon plot:
 library("gplots")
 gplots::balloonplot(df3, main ="Independence Test", xlab ="", ylab="",
             label = FALSE, show.margins = FALSE, colsrt=90, dotcolor = df3,
-            hide.duplicates=TRUE, text.size=0.5)
-# Remember that lot is indepent with respect to healtharea, sanitsub, and ltdheight.
+            hide.duplicates=TRUE, text.size=0.7)
+
+# Delete cd, council, zipcode, firecomp,
+# policeprct, healtharea, sanitboro, sanitsub, borocode, sanitdistrict,
+# healthcenterdistrict since they depend highly in schooldist.
+df <- read.csv("pluto3.csv")
+# Categorical variables:
+col_var <- c("block","lot","cd","schooldist","council","zipcode","firecomp","policeprct",
+             "healtharea","sanitboro","sanitsub","zonedist1","spdist1","ltdheight","landuse",
+             "ext","proxcode","irrlotcode","lottype","borocode","edesignum","sanitdistrict",
+             "healthcenterdistrict", "pfirm15_flag")
+# Keep categorical variables:
+df <- select(df, col_var)
+# Deleting the extremely dependent variables:
+dep_var1 <- c("cd", "council", "zipcode", "firecomp", "policeprct", "healtharea",
+                    "sanitboro", "sanitsub", "sanitdistrict", "healthcenterdistrict")
+# borocode was also supposed to be deleted since it is dependent, but it is kept for sampling.
+
+df <- select(df, -dep_var1, -c("block", "lot"))
+df <- lapply(df, as.factor)
+str(df)

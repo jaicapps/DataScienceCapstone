@@ -93,7 +93,7 @@ df9 <- df9[c("residfar", "facilfar", "assessland", "assesstot", "unitsres", "uni
 cfa.model <- 'factor1 =~ residfar + facilfar
               factor2 =~ assessland + assesstot
               factor3 =~ unitsres + unitstotal'
-fit <- cfa(cfa.model, data=df9)
+fit <- cfa(cfa.model, data=scale(df9))
 summary(fit, fit.measures=TRUE)
 
 
