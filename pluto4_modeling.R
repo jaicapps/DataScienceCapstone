@@ -26,3 +26,6 @@ dep_var3 <- c("irrlotcode", "numfloors", "unitsres", "lotfront", "bldgfront", "b
 
 # Also, we must remove the following since they are not needed for prediction:
 v <- c("xcoord", "ycood", "block", "lot", "borocode")
+
+# After this, we remove zipcode after using it for sampling, and also remove assesstot or assessland
+# based on which one we are predicting.
