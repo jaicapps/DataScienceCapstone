@@ -1,10 +1,14 @@
 library("dplyr")
 df <- read.csv("correlation/anova_all.csv")
+dep_var <- c("cd", "council", "zipcode", "firecomp", "policeprct", "healtharea",
+             "sanitboro", "sanitsub", "borocode", "sanitdistrict", "healthcenterdistrict")
+df <- select(df, -c("lot"))
+df <- select(df, -dep_var)
 rownames(df) <- df$X
 df <- df[,-1]
 rownames(df)
-# Delete assess total and assesset land from data
-df <- select(df, -c("assessland", "assesstot"))
+# Delete assess total and assesset land from data:
+df <- df[!rownames(df) %in% c("assessland", "assesstot"), ]
 
 a <- colnames(df)
 
@@ -43,31 +47,21 @@ for (i in b){
 d <- as.data.frame(d)
 colnames(d) <- "value"
 
-library(ggplot2)
-ggplot(data=d, aes(d$value)) + geom_histogram()
-ggplot(data=d, aes(d$value)) + geom_histogram() + ylim(0,40)
-ggplot(data=d, aes(d$value)) + geom_histogram() + ylim(0,40) + xlim(0,4e+5)
-
 # Choosing a threshold chi-squared value based on the above graphs:
-m = 3.0e+05
+boxplot(d$value)
+abline(h=quantile(d$value,0.75),col="red",lty=2)
+m <- as.numeric(quantile(d$value, 0.75))
+table(d$value>m)
 
 # Displaying those points that are greater than this threshold in skyblue color:
 df3 <- df2
-for (i in b){
-  for (j in a){
-    if (df3[i, j]>=m) {
-      df3[i, j] <- "skyblue"
-    }
-    else{
-      df3[i,j] <- "white"
-    }
-  }
-}
+df3[df3>m] <- "red"
+df3[df3!="red"] <- "white"
 
-df3 <- as.table(as.matrix(df3))
 # Balloon plot:
+df3 <- as.table(as.matrix(df3))
 library("gplots")
 gplots::balloonplot(df3, main ="Independence Test", xlab ="", ylab="",
                     label = FALSE, show.margins = FALSE, colsrt=90, dotcolor = df3,
-                    hide.duplicates=TRUE, text.size=0.5)
+                    hide.duplicates=TRUE, text.size=0.7)
 # Remember that lotarea is indepedent with respect to spdist1, ltdheight, and edesignum.

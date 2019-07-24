@@ -31,7 +31,7 @@ for (i in 1:dim(df1)[1]){
     }
   }
 }
-# The variable lot is indepent with respect to healtharea, sanitsub, and ltdheight.
+# No independence.
 
 # Upper triangle values of chi-squared values saved in a data frame:
 d <- as.data.frame(upperTriangle(df2, diag = FALSE, byrow = TRUE))
@@ -49,8 +49,7 @@ df3[df3>m] <- "red"
 df3[df3!="red"] <- "white"
 
 # White for the upper triangle so that only lower triangle is displayed:
-df3[upper.tri(df3, diag = "TRUE")] <- "white" 
-# Removing the dependencies of a variable with itself by coloring white for the diagonal.
+df3[upper.tri(df3, diag = "TRUE")] <- "white" # Removing the dependencies of a variable with itself by coloring white for the diagonal.
 df3 <- as.table(t(as.matrix(df3)))
 
 # Balloon plot:
@@ -58,7 +57,7 @@ library("gplots")
 gplots::balloonplot(df3, main ="Independence Test", xlab ="", ylab="",
             label = FALSE, show.margins = FALSE, colsrt=90, dotcolor = df3,
             hide.duplicates=TRUE, text.size=0.7)
-# Remember that lot is indepent with respect to healtharea, sanitsub, and ltdheight.
+
 # Delete cd, council, zipcode, firecomp,
 # policeprct, healtharea, sanitboro, sanitsub, borocode, sanitdistrict,
 # healthcenterdistrict since they depend highly in schooldist.
