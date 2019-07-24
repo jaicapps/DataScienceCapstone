@@ -25,4 +25,4 @@ dep_var3 <- c("irrlotcode", "numfloors", "unitsres", "lotfront", "bldgfront", "b
               "yearbuilt", "residfar", "commfar", "facilfar", "yearalter", "income")
 
 # Also, we must remove the following since they are not needed for prediction:
-v <- c("xcoord", "ycood", "block", "lot")
+v <- c("xcoord", "ycood", "block", "lot", "borocode")
