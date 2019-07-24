@@ -65,7 +65,19 @@ gplots::balloonplot(df3, main ="Independence Test", xlab ="", ylab="",
                     label = FALSE, show.margins = FALSE, colsrt=90, dotcolor = df3,
                     hide.duplicates=TRUE, text.size=0.7)
 # Remember that lotarea is indepedent with respect to spdist1, ltdheight, and edesignum.
-
+rownames(df2)
 # Two possibilities:
 # 1. Keeping commfar numerical variable along with categorical variables ltdheight, lottype,
-# pfirm15_flag, and numerical variables lotarea, bldgarea, numbldgs, 
+# and numerical variables lotarea, bldgarea, numbldgs, numfloors, unitsres, 
+# unitstotal, lotfront, lotdepth, bldgfront, bldgdepth, yearbuilt, residfar,  
+# yearalter, and income since the other variables depend on the numerical or categorical variables.
+# Hence, delete the following:
+dep_var2 <- c("facilfar", "schooldist", "zonedist1", "spdist1", "landuse", "ext", "proxcode",
+              "irrlotcode", "edesignum", "pfirm15_flag")
+
+
+# 2. Keeping lanudse categorical variable along with the numerical variables lotarea, bldgarea,
+# numbldgs, unitstotal, lotdepth, and categorical variables schooldist, zonedist1, spdist1,
+# ltdheight1, ext, proxcode, lottype, edesignum, and pfirm15_flag. Hence, delete the following:
+dep_var3 <- c("irrlotcode", "numfloors", "unitsres", "lotfront", "bldgfront", "bldgdepth",
+              "yearbuilt", "residfar", "commfar", "facilfar", "yearalter", "income")

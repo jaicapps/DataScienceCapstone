@@ -70,8 +70,10 @@ col_var <- c("block","lot","cd","schooldist","council","zipcode","firecomp","pol
 # Keep categorical variables:
 df <- select(df, col_var)
 # Deleting the extremely dependent variables:
-dep_var <- c("cd", "council", "zipcode", "firecomp", "policeprct", "healtharea",
-                    "sanitboro", "sanitsub", "borocode", "sanitdistrict", "healthcenterdistrict")
-df <- select(df, -dep_var, -c("block", "lot"))
+dep_var1 <- c("cd", "council", "zipcode", "firecomp", "policeprct", "healtharea",
+                    "sanitboro", "sanitsub", "sanitdistrict", "healthcenterdistrict")
+# borocode was also supposed to be deleted since it is dependent, but it is kept for sampling.
+
+df <- select(df, -dep_var1, -c("block", "lot"))
 df <- lapply(df, as.factor)
 str(df)
