@@ -9,20 +9,30 @@ for (i in colnames(df1)) {
   df1[,i] <- as.numeric(df1[,i])
 }
 
-# chi-squared values:
+# Chi-squared values:
 df2 <- df
 for (i in colnames(df2)) {
   df2[,i] <- gsub("(.*),.*", "\\1", df2[,i])
   df2[,i] <- as.numeric(df2[,i])
 }
 
-# Upper triangle values of df2 (chi-squared values) saved in a data frame:
+# # Those variables for which the independence hypothesis is not rejeceted:
+# a <- colnames(df1)
+# print("These pairs of variables might be independent:")
+# for (i in 1:dim(df1)[1]){
+#   for (j in 1:dim(df1)[2] + 1 - i){
+#     if(df1[a[i],a[j]] < 0.05){
+#       paste(i,j)
+#     }
+#   }
+# }
+
+# Upper triangle values of chi-squared values saved in a data frame:
 d <- as.data.frame(upperTriangle(df2, diag = TRUE, byrow = TRUE))
 colnames(d) <- "value"
 
 library(ggplot2)
-ggplot(data=d, aes(d$value)) + 
-  geom_histogram()
+ggplot(data=d, aes(d$value)) + geom_histogram()
 dt <- as.table(as.matrix(df2))
 
 m = 5.0e+6
@@ -39,12 +49,8 @@ for (i in a){
   }
 }
 
-for (i in 1:length(df2)){
-  for (j in 1:length(df2)+1-i){
-    df3[a[i], a[j]] <- "white"
-  }
-}
-
+# White for the lower triangle (without diagonal), so that only upper triangle is displayed in the plot:
+df3[lower.tri(df3, diag = FALSE)] <- "white" # diag = FALSE by default
 df3 <- as.table(as.matrix(df3))
 
 library("gplots")
