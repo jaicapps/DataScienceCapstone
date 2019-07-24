@@ -34,7 +34,6 @@ def create_sample(df, target_var):
     y = np.array(df[target])
     #get values for proportion variables
     categorical_prop_values = df.select_dtypes(include=['category'])
-    
     #choose 20% for training and 5% for test
     #reference: https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html
     X_train, X_test, y_train, y_test = train_test_split(x, y, train_size=0.2, 
