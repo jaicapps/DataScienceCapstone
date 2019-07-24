@@ -20,9 +20,15 @@ mc <- Mclust(
                                   "ext","proxcode","irrlotcode","lottype","borocode","edesignum","sanitdistrict",
                                   "healthcenterdistrict", "pfirm15_flag", "xcoord", "ycoord")])
 
-saveRDS(mc, file = "Clustering/result_of_Model_Based.rds")
 summary(mc)
+#Save cluster's result to .rds
+#####saveRDS(mc, file = "Clustering/result_of_Model_Based.rds")
+#Combined result with all data
 df_clust <- cbind(mc$classification, df)
+colnames(df_clust)[which(names(df_clust) == "mc$classification")] <- "Clust_M"
+
+#Save new df into csv
+####write.csv(df_clust,  file = "Clustering/df_model.csv")
 
 
 
