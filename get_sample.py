@@ -14,24 +14,26 @@ df = pd.read_csv("pluto3.csv")
 print(df.columns)
 
 #define categorical variables
-df["borocode_block"] = df["borocode"].astype(str) + df["block"].astype(str)
-cat_vars = ["borocode_block"]
-predictors = ["healtharea", "income"]
-target = ["assesstot"]
-#drop assessland
+#df["borocode_block"] = df["borocode"].astype(str) + df["block"].astype(str)
 df.drop('assessland', axis=1, inplace=True)
 df.drop('borocode', axis=1, inplace=True)
 df.drop('block', axis=1, inplace=True)
+
+cat_vars = ["zipcode"]
+predictors = ["zipcode", "healtharea", "income"]
+target = ["assesstot"]
+#drop assessland
+
 
 #transform to categorical variables, variables choosen to take proportion
 df[cat_vars] = df[cat_vars].apply(lambda x:x.astype('category'))
 
 #calculate proportions and remove the ones that has less than 2 in one class
-a = df[['borocode_block']].groupby(["borocode_block"]).size()
+a = df[['zipcode']].groupby(["zipcode"]).size()
 to_remove = a[a<2]
 a = a[a>1]
-df = df.loc[df['borocode_block'].isin(a.index.values)]
-df['borocode_block'] = df['borocode_block'].cat.remove_categories(to_remove.index.values)
+df = df.loc[df['zipcode'].isin(a.index.values)]
+df['zipcode'] = df['zipcode'].cat.remove_categories(to_remove.index.values)
 
 #set seet
 RANDOM_SEED = 101
@@ -50,6 +52,6 @@ X_train, X_test, y_train, y_test = train_test_split(x, y, train_size=0.2,
 
 total = df.shape[0]
 #check proportions -- substruction should be near 0
-borocode_prop = df[['block']].groupby(["block"]).size()/total
-borocode_prop_test = pd.DataFrame(X_test).groupby([0]).size()/(total*0.05)
+zipcode_prop = df[['zipcode']].groupby(["zipcode"]).size()/total
+zipcode_prop_test = pd.DataFrame(X_test).groupby([0]).size()/(total*0.05)
 
