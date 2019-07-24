@@ -1,3 +1,5 @@
+# Chi-squared test for independence between categorical variables:
+
 library("gdata")
 df <- read.csv("correlation/factors_chi2.csv")
 row.names(df) <- colnames(df)
