@@ -1,5 +1,5 @@
 # EFA --> NYC
-df <- read.csv("~/Desktop/plutostuff/pluto3.csv")
+df <- read.csv("pluto3.csv")
 
 
 # for variables (numbldgs, numfloors,	unitsres,	unitstotal)
@@ -79,6 +79,7 @@ col_var <- c("block","lot","cd","schooldist","council","zipcode","firecomp","pol
              "ext","proxcode","irrlotcode","lottype","borocode","edesignum","sanitdistrict",
              "healthcenterdistrict", "pfirm15_flag")
 #keep numeric vars
+library(dplyr)
 df9 <- select(df, -c(col_var, "xcoord", "ycoord"))
 df9.fa = factanal(df9, factors = 3) 
 print(df9.fa$loadings, cut = 0.35)
@@ -88,9 +89,10 @@ print(df9.fa$loadings, cut = 0.35)
 # latent variable =~ indicator1 + indicator2 + indicator3
 # install.packages("lavaan", dependencies = TRUE)
 library("lavaan")
-cfa.model <- 'factor1 =~ df9.fa$residfar + df9.fa$facilfar
-              factor2 =~ df9.fa$assessland + df9.fa$assesstot
-              factor3 =~ df9.fa$unitsres + df9.fa$unitstotal'
+df9 <- df9[c("residfar", "facilfar", "assessland", "assesstot", "unitsres", "unitstotal")]
+cfa.model <- 'factor1 =~ residfar + facilfar
+              factor2 =~ assessland + assesstot
+              factor3 =~ unitsres + unitstotal'
 fit <- cfa(cfa.model, data=df9)
 summary(fit, fit.measures=TRUE)
 
