@@ -86,6 +86,8 @@ print(df9.fa$loadings, cut = 0.35)
 
 #lapply(df9, class)
 
+
+# CFA --> NYC
 # latent variable =~ indicator1 + indicator2 + indicator3
 # install.packages("lavaan", dependencies = TRUE)
 library("lavaan")
