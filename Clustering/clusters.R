@@ -106,7 +106,7 @@ plot.wgss = function(mydata, maxc) {
 scree_plot2 <- plot.wgss(kmeans_df, 20)
 
 # do it
-km <- kmeans(kmeans_df, centers=4, nstart = 20)
+km <- kmeans(kmeans_df, centers=5, nstart = 20)
 table(km$cluster)
 
 kmeans_1 <- cbind(km$cluster, agg)
