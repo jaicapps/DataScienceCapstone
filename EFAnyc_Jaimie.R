@@ -1,6 +1,7 @@
 # EFA --> NYC
 df <- read.csv("~/Desktop/plutostuff/pluto3.csv")
 
+
 # for variables (numbldgs, numfloors,	unitsres,	unitstotal)
 df1 <- df[, 18:21]
 df.fa = factanal(df1, factors = 1) 
@@ -43,7 +44,7 @@ df5.fa = factanal(df5, factors = 1)
 
 # for variables (ltdheight,	landuse,	lotarea,	bldgarea,	numbldgs,	numfloors,	unitsres,	unitstotal,	lotfront,	lotdepth,	bldgfront,	bldgdepth)
 df6 <- df[, 14:25]
-df6.fa = factanal(df6, factors = 7)
+df6.fa = factanal(df6, factors = 1)
 print(df6.fa$loadings, cut = 0.35)
 # Factor 1: unitsres & unitstot
 # Factor 2: bldgfront
@@ -70,6 +71,29 @@ print(df7.fa$loadings, cut = 0.35)
 df8 <- df[, c(29, 36, 44)]
 df8.fa = factanal(df8, factors = 1) 
 # uniqueness is highest with all variables
+
+
+#
+col_var <- c("block","lot","cd","schooldist","council","zipcode","firecomp","policeprct",
+             "healtharea","sanitboro","sanitsub","zonedist1","spdist1","ltdheight","landuse",
+             "ext","proxcode","irrlotcode","lottype","borocode","edesignum","sanitdistrict",
+             "healthcenterdistrict", "pfirm15_flag")
+#keep numeric vars
+df9 <- select(df, -c(col_var, "xcoord", "ycoord"))
+df9.fa = factanal(df9, factors = 3) 
+print(df9.fa$loadings, cut = 0.35)
+
+#lapply(df9, class)
+
+# latent variable =~ indicator1 + indicator2 + indicator3
+# install.packages("lavaan", dependencies = TRUE)
+library("lavaan")
+cfa.model <- 'factor1 =~ df9.fa$residfar + df9.fa$facilfar
+              factor2 =~ df9.fa$assessland + df9.fa$assesstot
+              factor3 =~ df9.fa$unitsres + df9.fa$unitstotal'
+fit <- cfa(cfa.model, data=df9)
+summary(fit, fit.measures=TRUE)
+
 
 
 
