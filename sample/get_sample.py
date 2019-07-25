@@ -10,19 +10,11 @@ from proportion_sample import create_sample
 import pandas as pd
 
 df = pd.read_csv("../pluto2.csv")
-df_assestot = pd.DataFrame.copy(df)
-X_train, X_test, y_train, y_test, predictors = create_sample(df, "assessland", 0.1, 0.025)
+X_train, X_test, y_train, y_test, predictors = create_sample(df, "assessland", 0.0015, 0.00075)
 
-df1 = pd.DataFrame(X_train)
-df1.columns = predictors
-df1["assessland"] = pd.DataFrame(y_train)
-
-df2 = pd.DataFrame(X_test)
-df2.columns = predictors
-df2["assessland"] = pd.DataFrame(y_test)
-
-df = pd.concat([df1, df2])
-df.to_csv("sample.csv", index=False)
+df = pd.DataFrame(X_train)
+df.columns = predictors
+df["assessland"] = pd.DataFrame(y_train)
 
 
 cat_vars = ['cd', 'schooldist', 'council', 'zipcode', 'firecomp',
@@ -34,4 +26,4 @@ cat_vars = ['cd', 'schooldist', 'council', 'zipcode', 'firecomp',
 df[cat_vars] = df[cat_vars].apply(lambda x:x.astype('category'))
 df.drop(['xcoord', 'ycoord'], axis=1, inplace=True)
 
-sapply(df[,sapply(df,is.factor)], nlevels)
+df.to_csv("sample.csv", index=False)
