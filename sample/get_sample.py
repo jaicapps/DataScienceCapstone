@@ -23,3 +23,15 @@ df2["assessland"] = pd.DataFrame(y_test)
 
 df = pd.concat([df1, df2])
 df.to_csv("sample.csv", index=False)
+
+
+cat_vars = ['cd', 'schooldist', 'council', 'zipcode', 'firecomp',
+       'policeprct', 'healtharea', 'sanitboro', 'sanitsub', 'zonedist1',
+       'spdist1', 'ltdheight', 'landuse', 'ext', 'proxcode', 'irrlotcode', 'lottype',
+       'residfar', 'borocode', 'edesignum', 'sanitdistrict', 'healthcenterdistrict', 
+       'pfirm15_flag']
+
+df[cat_vars] = df[cat_vars].apply(lambda x:x.astype('category'))
+df.drop(['xcoord', 'ycoord'], axis=1, inplace=True)
+
+sapply(df[,sapply(df,is.factor)], nlevels)
