@@ -124,8 +124,11 @@ df6 <- df4[, !(colnames(df4) %in% c(dep_var1, "assesstot"))]
 errors_6 = execute_lasso_assessland(df6)
 
 plot(c(unlist(errors_1[2]), unlist(errors_2[2]), 
-       unlist(errors_1_3[2]), unlist(errors_4[2]), unlist(errors_5[2]), 
+       unlist(errors_3[2]), unlist(errors_4[2]), unlist(errors_5[2]), 
        unlist(errors_6[2])), main = "Compare RMSE", 
-     xlab = "Model", ylab="RMSE")
+     xlab = "Model", ylab="RMSE", xlim=range(1:6))
 
-
+plot(c(unlist(errors_1[3]), unlist(errors_2[3]), 
+       unlist(errors_3[3]), unlist(errors_4[3]), unlist(errors_5[3]), 
+       unlist(errors_6[3])), main = "Compare R2", 
+     xlab = "Model", ylab="R2", xlim=range(1:6))
