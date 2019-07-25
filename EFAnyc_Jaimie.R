@@ -98,7 +98,12 @@ cfa.model <- 'factor1 =~ residfar + facilfar
 fit <- cfa(cfa.model, data=scale(df9))
 summary(fit, fit.measures=TRUE)
 
+#library(sem)
+#nyc_sem <- lavaan::sem(cfa.model, cor(df9), nrow(df9))
 
+
+# library(semPlot)
+# semPaths(crime_sem, rotation = 2, 'std', 'est')
 
 
 # RMSE measures the discrepancy between the original correlation matrix and the EFA approximated correlation matrix.
