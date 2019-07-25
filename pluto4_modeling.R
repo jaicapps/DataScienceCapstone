@@ -1,11 +1,11 @@
 library("dplyr")
-df <- read.csv("pluto3.csv")
+df <- read.csv("pluto2.csv")
 table(df$zipcode==11430) # Outliers as seen from Tableau. JFK airport that has too high of an 
 # assessed land and assessed total
 table(df$zipcode == 12345) # Outlier as seen from Tableau.
 df <- filter(df, !(zipcode == 11430 | zipcode == 12345))
 # writing to csv:
-write.csv(df, file = "pluto4.csv", row.names=FALSE)
+write.csv(df, file = "pluto2.csv", row.names=FALSE)
 
 # From the correlation of numerical variables, we decide not to delete any numerical variables.
 
