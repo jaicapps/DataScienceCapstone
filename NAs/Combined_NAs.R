@@ -672,6 +672,14 @@ df <- subset(df, select = -c(edesigdate))
 df <- subset(df, select = -c(borough))
 #######################################################################################################################################
 
+# From Tableau:
+table(df$zipcode==11430) # Outliers as seen from Tableau. JFK airport that has too high of an 
+# assessed land and assessed total
+table(df$zipcode == 12345) # Outlier as seen from Tableau.
+# Deleting these outliers:
+df <- filter(df, !(zipcode == 11430 | zipcode == 12345))
+#######################################################################################################################################
+
 # Writing the new partially cleaned CSV file:
 write.csv(df, file = "pluto2.csv", row.names=FALSE)
 #######################################################################################################################################

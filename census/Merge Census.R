@@ -9,11 +9,11 @@ colnames(families) <- c("zipcode", "mean_income_fam", "mean_income_non")
 
 data <- merge(pluto, families, by="zipcode", all.x = TRUE)
 
-#fill NAs values for mean income taking sample from zipcode, if then is still NA fill by borough
+#fill NAs values for mean income taking median from zipcode, if then is still NA fill by borough
 data$mean_income_fam[is.na(data$mean_income_fam)] <- fill_NAs_median(data, "mean_income_fam")
 data$mean_income_non[is.na(data$mean_income_non)] <- fill_NAs_median(data, "mean_income_non")
-data$mean_income_fam[is.na(data$mean_income_fam)] <- fill_NAs_by_borough(data, "mean_income_fam")
-data$mean_income_non[is.na(data$mean_income_non)] <- fill_NAs_by_borough(data, "mean_income_non")
+data$mean_income_fam[is.na(data$mean_income_fam)] <- fill_NAs_median_borough(data, "mean_income_fam")
+data$mean_income_non[is.na(data$mean_income_non)] <- fill_NAs_median_borough(data, "mean_income_non")
 
 table(is.na(data$mean_income_fam))
 table(is.na(data$mean_income_non))
