@@ -1,10 +1,10 @@
 # Chi-squared test for independence between categorical variables:
 library("dplyr")
 library("gdata")
-df <- read.csv("correlation/factors_chi2.csv")
+source("libraries.R")
+
+df <- read.csv("correlation/chisquare_0.011.csv")
 row.names(df) <- colnames(df)
-df <- select(df, -c("lot","block"))
-df <- df[!rownames(df) %in% c("lot","block"), ]
 
 # p values:
 df1 <- df
@@ -34,29 +34,29 @@ for (i in 1:dim(df1)[1]){
 # No independence.
 
 # Upper triangle values of chi-squared values saved in a data frame:
-d <- as.data.frame(upperTriangle(df2, diag = FALSE, byrow = TRUE))
-colnames(d) <- "value"
+# d <- as.data.frame(upperTriangle(df2, diag = FALSE, byrow = TRUE))
+# colnames(d) <- "value"
 
 # Choosing a threshold chi-squared value:
-boxplot(d$value)
-abline(h=quantile(d$value,0.75),col="red",lty=2)
-m <- as.numeric(quantile(d$value, 0.75))
-table(d$value>m)
+# boxplot(d$value)
+# abline(h=quantile(d$value,0.75),col="red",lty=2)
+# m <- as.numeric(quantile(d$value, 0.75))
+# table(d$value>m)
 
 # Displaying those points that are greater than this threshold in skyblue color:
-df3 <- df2
-df3[df3>m] <- "red"
-df3[df3!="red"] <- "white"
+df3 <- df1
+df3[df3>0.01] <- "blue" #independent
+df3[df3!="blue"] <- "pink"
 
 # White for the upper triangle so that only lower triangle is displayed:
-df3[upper.tri(df3, diag = "TRUE")] <- "white" # Removing the dependencies of a variable with itself by coloring white for the diagonal.
+# df3[upper.tri(df3, diag = "TRUE")] <- "white" # Removing the dependencies of a variable with itself by coloring white for the diagonal.
 df3 <- as.table(t(as.matrix(df3)))
 
 # Balloon plot:
 library("gplots")
 gplots::balloonplot(df3, main ="Independence Test", xlab ="", ylab="",
             label = FALSE, show.margins = FALSE, colsrt=90, dotcolor = df3,
-            hide.duplicates=TRUE, text.size=0.7)
+            hide.duplicates=TRUE, text.size=0.7,dotsize=3)
 
 # Delete cd, council, zipcode, firecomp,
 # policeprct, healtharea, sanitboro, sanitsub, borocode, sanitdistrict,

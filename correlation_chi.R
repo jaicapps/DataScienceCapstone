@@ -31,11 +31,19 @@ write_csv(test2, path = "correlation/factors_chi2.csv")
 
 
 ##### Repeate the process only for sample #####
-#set.seed(123)
-#test2_sample <- sample_n(df, 1000)
-#write_csv(test2_sample, path = "correlation/sample_corr.csv")
 
-test2_sample <- read.csv("correlation/sample.csv") 
+source("libraries.R")
+source("data_type_fun.R")
+
+test2_sample <- read.csv("sample/sample_0.011.csv")
+
+col_var <- c("cd","schooldist","council","zipcode","firecomp","policeprct",
+             "healtharea","sanitboro","sanitsub","zonedist1","spdist1","ltdheight","landuse",
+             "ext","proxcode","irrlotcode","lottype","borocode","edesignum","sanitdistrict",
+             "healthcenterdistrict", "pfirm15_flag")
+
+row_var <- col_var
+
 test2_sample <- data_type(test2_sample)
 
 counter <- 0
@@ -50,4 +58,4 @@ for (j in col_var) {
   }
 }
 
-write_csv(test2_samp, path = "correlation/factors_chi2_sample.csv")
+write_csv(test2_samp, path = "correlation/chisquare_0.011.csv")
