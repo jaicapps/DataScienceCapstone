@@ -10,7 +10,7 @@ from proportion_sample import create_sample
 import pandas as pd
 
 df = pd.read_csv("../pluto2.csv")
-X_train, X_test, y_train, y_test, predictors = create_sample(df, "assessland", 0.0015, 0.00075)
+X_train, X_test, y_train, y_test, predictors = create_sample(df, "assessland", 0.02, 0.00075)
 
 df = pd.DataFrame(X_train)
 df.columns = predictors
