@@ -82,10 +82,13 @@ class(df$cd)
 table(is.na(df$cd))
 # Replace 11 NAs with random cd values of the corresponding zipcodes:
 df$cd[is.na(df$cd)] <- fill_NAs_by_zipcode(df,"cd")
-# Removing the first digit of cd since it refers to the borough code which is information present in another
-# column and converting to factor:
-df$cd <- as.factor(substring(as.character(df$cd),2))
-levels(df$cd) # 34 levels
+# Converting to factor:
+df$cd <- as.factor(df$cd)
+levels(df$cd) # 79 levels
+# Removing rows that have cd values of 8, 32, and, 78 which are erronoeous:
+df <- filter(df, !(cd == 8 | cd == 32 | cd == 78))
+df$cd <- droplevels(df$cd)
+levels(df$cd) # 76 levels
 #######################################################################################################################################
 
 # ct2010 and cb2010 are deleted since we only use zipcode to match to census data.
@@ -153,7 +156,7 @@ df$sanitsub[df$sanitsub==" "] <- NA
 df$sanitsub[is.na(df$sanitsub)] <- fill_NAs_by_zipcode(df,"sanitsub")
 # Replace the 25 NAs with random sanitsub values of the corresponding boroughs:
 df$sanitsub[is.na(df$sanitsub)] <- fill_NAs_by_borough(df,"sanitsub")
-# Thhe new levels:
+# The new levels:
 df$sanitsub <- droplevels(df$sanitsub)
 levels(df$sanitsub) # 62 levels
 #######################################################################################################################################

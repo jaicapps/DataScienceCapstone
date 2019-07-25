@@ -60,7 +60,7 @@ gplots::balloonplot(df3, main ="Independence Test", xlab ="", ylab="",
 
 # Delete cd, council, zipcode, firecomp,
 # policeprct, healtharea, sanitboro, sanitsub, borocode, sanitdistrict,
-# healthcenterdistrict since they depend highly in schooldist.
+# healthcenterdistrict since they depend highly on schooldist.
 df <- read.csv("pluto3.csv")
 # Categorical variables:
 col_var <- c("block","lot","cd","schooldist","council","zipcode","firecomp","policeprct",
