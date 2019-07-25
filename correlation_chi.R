@@ -4,13 +4,15 @@ source("data_type_fun.R")
 df <- read.csv("pluto2.csv")
 df <- data_type(df)
 
-col_var <- c("lot","cd","schooldist","council","zipcode","firecomp","policeprct",
+col_var <- c("cd","schooldist","council","zipcode","firecomp","policeprct",
              "healtharea","sanitboro","sanitsub","zonedist1","spdist1","ltdheight","landuse",
              "ext","proxcode","irrlotcode","lottype","borocode","edesignum","sanitdistrict",
-             "healthcenterdistrict", "pfirm15_flag","block")
+             "healthcenterdistrict", "pfirm15_flag")
 
 row_var <- col_var
 
+
+#####  This test is on the whole dataset
 counter <- 0
 test2 <- data.frame()
 
@@ -25,3 +27,23 @@ for (j in col_var) {
 
 write_csv(test2, path = "correlation/factors_chi2.csv")
 
+
+
+##### Repeate the process only for sample #####
+set.seed(123)
+test2_sample <- sample_n(df, 1000)
+write_csv(test2_sample, path = "correlation/sample_corr.csv")
+
+counter <- 0
+test2_sample <- data.frame()
+
+for (j in col_var) {
+  for(i in row_var) {
+    chi_res <- chisq.test(df[,j], df[,i], simulate.p.value = TRUE)
+    test2_sample[i,j] <- paste(round(chi_res$statistic,3), chi_res$p.value, sep=", ")
+    print(paste0("done ",i," ",j))
+    print(counter <- counter+1)
+  }
+}
+
+write_csv(test2_sample, path = "correlation/factors_chi2_sample.csv")
