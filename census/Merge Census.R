@@ -3,7 +3,6 @@ source("libraries.R")
 source("NAs/utils.R")
 pluto <- read.csv("pluto2.csv")
 income <- read.csv("census/census_income.csv")
-age_sex <- read.csv("census/census_age_sex.csv")
 
 families <- select(income, "GEO.id2", "HC02_EST_VC15", "HC04_EST_VC15")
 colnames(families) <- c("zipcode", "mean_income_fam", "mean_income_non")
