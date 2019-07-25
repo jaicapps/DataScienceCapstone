@@ -12,9 +12,9 @@ from sklearn.model_selection import train_test_split
 #create sample for df with the same proportion by zipcode
 #target variable would be the target and the rest of the variables the predictors
 #(without zipcode)
-def create_sample(df, target_var):
+def create_sample(df, target_var, train_p, test_p):
     prop_vars = ["zipcode"]
-    predictors = df.columns.drop([target_var, "zipcode"])
+    predictors = df.columns.drop([target_var])
     target = [target_var]
     
     #transform to categorical variables, variables choosen to take proportion
@@ -36,8 +36,8 @@ def create_sample(df, target_var):
     categorical_prop_values = df.select_dtypes(include=['category'])
     #choose 20% for training and 5% for test
     #reference: https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html
-    X_train, X_test, y_train, y_test = train_test_split(x, y, train_size=0.2, 
-                                                        test_size=0.05, 
+    X_train, X_test, y_train, y_test = train_test_split(x, y, train_size=train_p, 
+                                                        test_size=test_p, 
                                                         random_state = RANDOM_SEED, 
                                                         stratify=categorical_prop_values)
 

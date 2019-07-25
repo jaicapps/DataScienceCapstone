@@ -13,14 +13,14 @@ def get_model_assessland(dep_var):
     df.drop(dep_var, axis=1, inplace=True)
     df_assessland = pd.DataFrame.copy(df)
     df_assessland.drop("assesstot", axis=1, inplace=True)
-    return create_sample(df_assessland, "assessland")
+    return create_sample(df_assessland, "assessland", 0.2, 0.05)
 
 def get_model_assesstot(dep_var):
     df = pd.read_csv("../pluto4.csv")
     df.drop(dep_var, axis=1, inplace=True)
     df_assestot = pd.DataFrame.copy(df)
     df_assestot.drop("assessland", axis=1, inplace=True)
-    return create_sample(df_assestot, "assesstot")
+    return create_sample(df_assestot, "assesstot", 0.2, 0.05)
 
 def save_dataframes(X_train, X_test, y_train, y_test, predictors, target_var, model_id):
     X_train = pd.DataFrame(X_train)
