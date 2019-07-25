@@ -106,29 +106,36 @@ dep_var3 <- c("irrlotcode", "numfloors", "unitsres", "lotfront", "bldgfront", "b
               "yearbuilt", "residfar", "commfar", "facilfar", "yearalter", "income")
 
 df1 <- df[, !(colnames(df) %in% c(dep_var1, "assessland"))]
-errors_1 = execute_lasso_assesstot(df1)
+errors_1 = unlist(execute_lasso_assesstot(df1))
 
 df2 <- df1[,!(colnames(df1) %in% dep_var2)]
-errors_2 = execute_lasso_assesstot(df2)
+errors_2 = unlist(execute_lasso_assesstot(df2))
 
 df3 <- df1[,!(colnames(df1) %in% dep_var3)]
-errors_3 = execute_lasso_assesstot(df3)
+errors_3 = unlist(execute_lasso_assesstot(df3))
 
 df4 <- df[, !(colnames(df) %in% c(dep_var1, "assesstot"))]
-errors_4 = execute_lasso_assessland(df4)
+errors_4 = unlist(execute_lasso_assessland(df4))
 
-df5 <- df4[, !(colnames(df4) %in% c(dep_var1, "assesstot"))]
-errors_5 = execute_lasso_assessland(df5)
+df5 <- df4[, !(colnames(df4) %in% dep_var2)]
+errors_5 = unlist(execute_lasso_assessland(df5))
 
-df6 <- df4[, !(colnames(df4) %in% c(dep_var1, "assesstot"))]
-errors_6 = execute_lasso_assessland(df6)
+df6 <- df4[, !(colnames(df4) %in% dep_var3)]
+errors_6 = unlist(execute_lasso_assessland(df6))
 
-plot(c(unlist(errors_1[2]), unlist(errors_2[2]), 
-       unlist(errors_3[2]), unlist(errors_4[2]), unlist(errors_5[2]), 
-       unlist(errors_6[2])), main = "Compare RMSE", 
-     xlab = "Model", ylab="RMSE", xlim=range(1:6))
 
-plot(c(unlist(errors_1[3]), unlist(errors_2[3]), 
-       unlist(errors_3[3]), unlist(errors_4[3]), unlist(errors_5[3]), 
-       unlist(errors_6[3])), main = "Compare R2", 
-     xlab = "Model", ylab="R2", xlim=range(1:6))
+#lower is better
+plot(c(errors_1[2], errors_2[2], errors_3[2]), main = "Compare RMSE", 
+       xlab = "Model", ylab="Assesstot RMSE", xlim=range(1:3))
+
+plot(c(errors_4[2], errors_5[2], errors_6[2]), main = "Compare RMSE", 
+     xlab = "Model", ylab="AssessLand RMSE", xlim=range(1:3))
+     
+  
+#higher is better
+plot(c(errors_1[3], errors_2[3], errors_3[3]), main = "Compare RMSE", 
+     xlab = "Model", ylab="Assesstot R-squared", xlim=range(1:3))
+
+plot(c(errors_4[3], errors_5[3], errors_6[3]), main = "Compare RMSE", 
+     xlab = "Model", ylab="AssessLand R-squared", xlim=range(1:3))
+
