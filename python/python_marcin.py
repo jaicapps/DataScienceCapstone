@@ -89,9 +89,9 @@ def a_tree(df1, top_predictors_list):
 
     #Build a tree
     reg = RandomForestRegressor(
-            n_estimators=1, 
-            max_depth=2, 
-            bootstrap=False, 
+            n_estimators=100, 
+            max_depth=100, 
+            bootstrap=True, 
             random_state=123
             )
     reg.fit(X, y)
@@ -105,7 +105,7 @@ def a_tree(df1, top_predictors_list):
     return rms, mae
 
 # max number of predictors you want:
-k=60
+k=10
 for i in range(1, k+1):
     print("number of predictors",i)
 
