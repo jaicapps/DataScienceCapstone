@@ -9,7 +9,7 @@ library(parallel)
 library(doMC)
 no_cores <- max(1, detectCores() - 2)
 
-df <- read.csv("pluto4.csv")
+df <- read.csv("pluto3.csv")
 df <- data_type(df)
 
 execute_lasso_assesstot <- function(df) {
@@ -91,15 +91,15 @@ execute_lasso_assessland <- function(df) {
   print(paste("error=", error))
   print(paste("RMSE=", RMSE))
   print(paste("R2=", R2))
-
+  
   return (list(error,RMSE, R2))
 }
 
 
 dep_var1 = c("cd", "council", "firecomp", "policeprct", "healtharea",
-           "sanitboro", "sanitsub", "sanitdistrict", "healthcenterdistrict", 
-           "block", "xcoord", "ycoord","block", "lot", "borocode",
-           "xcoord", "ycoord", "zipcode")
+             "sanitboro", "sanitsub", "sanitdistrict", "healthcenterdistrict", 
+             "block", "xcoord", "ycoord","block", "lot", "borocode",
+             "xcoord", "ycoord", "zipcode")
 dep_var2 = c("facilfar", "schooldist", "zonedist1", "spdist1", 
              "landuse", "ext", "proxcode", "irrlotcode", "edesignum", "pfirm15_flag")
 dep_var3 <- c("irrlotcode", "numfloors", "unitsres", "lotfront", "bldgfront", "bldgdepth",
@@ -126,12 +126,12 @@ errors_6 = unlist(execute_lasso_assessland(df6))
 
 #lower is better
 plot(c(errors_1[2], errors_2[2], errors_3[2]), main = "Compare RMSE", 
-       xlab = "Model", ylab="Assesstot RMSE", xlim=range(1:3))
+     xlab = "Model", ylab="Assesstot RMSE", xlim=range(1:3))
 
 plot(c(errors_4[2], errors_5[2], errors_6[2]), main = "Compare RMSE", 
      xlab = "Model", ylab="AssessLand RMSE", xlim=range(1:3))
-     
-  
+
+
 #higher is better
 plot(c(errors_1[3], errors_2[3], errors_3[3]), main = "Compare RMSE", 
      xlab = "Model", ylab="Assesstot R-squared", xlim=range(1:3))

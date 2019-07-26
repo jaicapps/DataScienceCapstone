@@ -45,7 +45,7 @@ for (i in 1:dim(df1)[1]){
 
 # Displaying those points that are greater than this threshold in skyblue color:
 df3 <- df1
-df3[df3>0.01] <- "blue" #independent
+df3[df3>0.05] <- "blue" #independent
 df3[df3!="blue"] <- "pink"
 
 # White for the upper triangle so that only lower triangle is displayed:

@@ -1,4 +1,4 @@
-df <- read.csv("pluto3.csv")
+df <- read.csv("sample/sample_0.011.csv")
 categorical_vars <- c("cd","schooldist","council","zipcode","firecomp","policeprct",
                       "healtharea","sanitboro","sanitsub","zonedist1","spdist1","ltdheight","landuse",
                       "ext","proxcode","irrlotcode","lottype","borocode","edesignum","sanitdistrict",
@@ -18,4 +18,4 @@ for (i in numeric_vars) {
     result[i,j] <- paste(unlist(summary(fit))["F value1"], unlist(summary(fit))["Pr(>F)1"], sep=",")
   }
 }
-write.csv(result,"anova_all.csv")
+write.csv(result,"correlation/anova_sample.csv")

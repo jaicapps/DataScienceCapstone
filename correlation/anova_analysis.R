@@ -1,9 +1,7 @@
 library("dplyr")
-df <- read.csv("correlation/anova_all.csv")
-dep_var <- c("cd", "council", "zipcode", "firecomp", "policeprct", "healtharea",
-             "sanitboro", "sanitsub", "borocode", "sanitdistrict", "healthcenterdistrict")
+df <- read.csv("correlation/anova_sample.csv")
+
 df <- select(df, -c("lot"))
-df <- select(df, -dep_var)
 rownames(df) <- df$X
 df <- df[,-1]
 rownames(df)
@@ -48,22 +46,22 @@ d <- as.data.frame(d)
 colnames(d) <- "value"
 
 # Choosing a threshold chi-squared value based on the above graphs:
-boxplot(d$value)
-abline(h=quantile(d$value,0.75),col="red",lty=2)
-m <- as.numeric(quantile(d$value, 0.75))
-table(d$value>m)
+#boxplot(d$value)
+#abline(h=quantile(d$value,0.75),col="red",lty=2)
+#m <- as.numeric(quantile(d$value, 0.75))
+#table(d$value>m)
 
 # Displaying those points that are greater than this threshold in skyblue color:
-df3 <- df2
-df3[df3>m] <- "red"
-df3[df3!="red"] <- "white"
+df3 <- df1
+df3[df3>0.05] <- "blue" #independent
+df3[df3!="blue"] <- "pink"
 
 # Balloon plot:
 df3 <- as.table(as.matrix(df3))
 library("gplots")
 gplots::balloonplot(df3, main ="Independence Test", xlab ="", ylab="",
                     label = FALSE, show.margins = FALSE, colsrt=90, dotcolor = df3,
-                    hide.duplicates=TRUE, text.size=0.7)
+                    hide.duplicates=TRUE, text.size=0.7,dotsize=3)
 # Remember that lotarea is indepedent with respect to spdist1, ltdheight, and edesignum.
 rownames(df2)
 # Two possibilities:
