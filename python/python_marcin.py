@@ -11,13 +11,12 @@ Created on Thu Jul 25 21:46:17 2019
 #Load the data
 import pandas as pd
 import numpy as np
-from sklearn.feature_selection import SelectKBest
-from sklearn.feature_selection import f_regression
+
 
 #Read the data
 data = pd.read_csv("sample/sample_0.011.csv")
 # drop also block and lot
-data=data.drop(['lot','block'], axis=1) 
+data=data.drop(['lot','block'], axis=1)
 
 
 #Scpecify what columns are factors
@@ -46,7 +45,9 @@ df1.drop(to_factors, axis=1, inplace=True)
 #Concat numeric variables wiht converted factors
 df1 = pd.concat([df1, df_dummies], axis=1)
 
-
+from sklearn.feature_selection import SelectKBest
+from sklearn.feature_selection import f_regression
+## Select the best k predictors from data
 def select_kbest_reg(data_frame, target, k):
     """
     Selecting K-Best features regression
@@ -73,17 +74,52 @@ def select_kbest_reg(data_frame, target, k):
     return predictors_list
 
 
-# Call the function which gives you k best predictors
-top_predictors_list=select_kbest_reg(df1, 'assessland', k=10)
-
+## Run random Forest with k predictors choosen by previous function
+## and calculate the rmse    
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_absolute_error
+from math import sqrt
 ### Use those predictors to build a tree
-type(to_factors)
-def a_tree:
+def a_tree(df1, top_predictors_list):
     # X contains only predictors choosen by the function select_kbest_reg
     X = df1[top_predictors_list]
     # y only target variables
     y = df1['assessland']
 
+    #Build a tree
+    reg = RandomForestRegressor(
+            n_estimators=1, 
+            max_depth=2, 
+            bootstrap=False, 
+            random_state=123
+            )
+    reg.fit(X, y)
+    
+    
+    # Calcualte evaluation metrics
+    preds = reg.predict(X)
+    rms = sqrt(mean_squared_error(y, preds))
+    mae = mean_absolute_error(y, preds)
+
+    return rms, mae
+
+# max number of predictors you want:
+k=60
+for i in range(1, k+1):
+    print("number of predictors",i)
+
+    # Call the function which gives you k best predictors
+    top_predictors_list=select_kbest_reg(df1, 'assessland', k=i)
+    print(top_predictors_list)
+
+    # Call the function to create a tree and give rmse
+    print('Error:',a_tree(df1, top_predictors_list))
+
+
+# Combined preds and actual values into one column
+actual_pred = pd.DataFrame({"pred": preds})
+actual_pred['actual'] = y 
 
 
 
@@ -92,30 +128,3 @@ def a_tree:
 
 
 
-
-
-
-
-
-
-feat=SelectKBest(f_regression, k=2).fit_transform(df1.drop('assessland', axis=1), df1['assessland'])
-feat.scores_
-
-#apply SelectKBest class to extract top 10 best features
-bestfeatures = SelectKBest(score_func=chi2, k=10)
-fit = bestfeatures.fit(X,y)
-dfscores = pd.DataFrame(fit.scores_)
-dfcolumns = pd.DataFrame(X.columns)
-#concat two dataframes for better visualization 
-featureScores = pd.concat([dfcolumns,dfscores],axis=1)
-featureScores.columns = ['Specs','Score']  #naming the dataframe columns
-print(featureScores.nlargest(20,'Score'))
-
-
-
-from sklearn.feature_selection import SelectPercentile
-from sklearn.feature_selection import f_regression
-Selector_f = SelectPercentile(f_regression, percentile=25)
-Selector_f.fit(X,y)
-for n,s in zip(boston.feature_names,Selector_f.scores_):
- print ‘F-score: %3.2ft for feature %s ‘ % (s,n)
