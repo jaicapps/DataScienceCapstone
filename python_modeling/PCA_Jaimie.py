@@ -73,7 +73,7 @@ for X2_transformed, title in [(X2_ipca, "Incremental PCA"), (X2_pca, "PCA")]:
     else:
         plt.title(title + " of iris dataset")
     plt.legend(loc="best", shadow=False, scatterpoints=1)
-    plt.axis([-4, 4, -1.5, 1.5])
+    plt.axis([0, 26, 0, 26])
 
 plt.show()
 
