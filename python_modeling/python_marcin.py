@@ -15,9 +15,11 @@ import numpy as np
 #Read the data
 #data = pd.read_csv("sample/sample_0.011.csv")
 ####################################################TEST ON WITHOUT LOCATION VAR
-#data = pd.read_csv("pluto3.csv")
-data = pd.read_csv("sample/sample_0.011.csv")
-data=data.drop([#'xcoord','ycoord', #'income', # income comes when it is pluto3
+data = pd.read_csv("pluto3.csv")
+data=data.drop(['xcoord','ycoord','firecomp'], axis=1)
+
+#data = pd.read_csv("sample/sample_0.011.csv")
+'''data=data.drop([#'xcoord','ycoord', #'income', # income comes when it is pluto3
                 "cd","schooldist","council","firecomp","policeprct",
                "healtharea","sanitboro","sanitsub","zonedist1","spdist1","sanitdistrict"], axis=1)
 
@@ -31,11 +33,19 @@ to_factors = ["zipcode","ltdheight","landuse",
 for i in to_factors: 
     data[i] = data[i].astype('category')
     print(i) 
-    
-    
+'''
+
+## Check Outliers
+data.boxplot(column=['assessland'])
+data.nlargest(5000, ['assessland'])['assessland']
+data=data.loc[data['assessland'] <= 2.402100e+06]
+#data = data.reset_index()
+
+data.isnull().sum()
+
 ################################################### END OF THE TEST
 # drop also block and lot
-'''data=data.drop(['lot','block'], axis=1)
+data=data.drop(['lot','block'], axis=1)
 
 
 #Scpecify what columns are factors
@@ -48,7 +58,7 @@ to_factors = ["cd","schooldist","council","zipcode","firecomp","policeprct",
 for i in to_factors: 
     data[i] = data[i].astype('category')
     print(i) 
-'''
+
 
 ##### Feature Selection #####
 #### 1. f_regression using SelectKBest
@@ -118,7 +128,7 @@ def a_tree(df1, top_predictors_list):
 
     #Build a tree
     reg = RandomForestRegressor(
-            n_estimators=100, 
+            n_estimators=50, 
             max_depth=10, 
             bootstrap=False, 
             random_state=123
@@ -128,18 +138,21 @@ def a_tree(df1, top_predictors_list):
     preds_test = reg.predict(X_test)
     
     # Calcualte evaluation metrics for TRAIN
-    rms_train = sqrt(mean_squared_error(y_train, preds_train))
-    #mae_train = mean_absolute_error(y_train, preds_train)
+    #rms_train = sqrt(mean_squared_error(y_train, preds_train))
+    mae_train = mean_absolute_error(y_train, preds_train)
+    #mean_err_train=np.square(np.subtract(y_train, preds_train)).mean()
+
     
     # Calcualte evaluation metrics for TEST
-    rms_test = sqrt(mean_squared_error(y_test, preds_test))
-    #mae_test = mean_absolute_error(y_test, preds_test)
+    #rms_test = sqrt(mean_squared_error(y_test, preds_test))
+    mae_test = mean_absolute_error(y_test, preds_test)
+    #mean_err_test=np.square(np.subtract(y_test, preds_test)).mean()
 
 
-    return rms_train, rms_test
+    return mae_train, mae_test
 
 # max number of predictors you want:
-k=6
+k=12
 error_train=[]
 error_test=[]
 for i in range(1, k+1):
@@ -172,12 +185,22 @@ plt.ylabel('Error')
 plt.show()
 
 # Combined preds and actual values into one column
-actual_pred = pd.DataFrame({"pred": preds})
-actual_pred['actual'] = y 
+train_hist = pd.DataFrame({"pred_train": preds_train})
+train_hist['y_train'] = y_train 
 
 
+from sklearn.linear_model import Lasso
+from yellowbrick.regressor import PredictionError
 
+# Instantiate the linear model and visualizer
+lasso = Lasso()
+visualizer = PredictionError(lasso)
 
+visualizer.fit(X_train, y_train)  # Fit the training data to the visualizer
+visualizer.score(X_test, y_test)  # Evaluate the model on the test data
+g = visualizer.poof() 
+
+#https://www.scikit-yb.org/en/latest/quickstart.html
 
 
 
