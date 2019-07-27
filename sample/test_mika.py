@@ -21,7 +21,6 @@ categorical_vars = ['cd', 'schooldist', 'council', 'zipcode', 'firecomp',
        'spdist1', 'ltdheight', 'landuse',  'ext', 'proxcode', 'irrlotcode', 'lottype',
        'borocode','edesignum', 'sanitdistrict', 'healthcenterdistrict', 'pfirm15_flag']
 
-df[categorical_vars] = df[categorical_vars].apply(lambda x:x.astype('category'))
 df_dummies = pd.get_dummies(df[categorical_vars], drop_first=False) #keep all dummies to evaluate importance, for the prediction should say drop_first=True
 df.drop(categorical_vars, axis=1, inplace=True)
 df = pd.concat([df, df_dummies], axis=1)

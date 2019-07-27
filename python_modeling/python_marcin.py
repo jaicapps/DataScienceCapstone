@@ -1,22 +1,41 @@
 # -*- coding: utf-8 -*-
 """
 Created on Thu Jul 25 21:46:17 2019
-
-@author: grzechu
+@author: marcin
 """
 
 ## Based on:
 # https://towardsdatascience.com/feature-selection-techniques-in-machine-learning-with-python-f24e7da3f36e
 
-#Load the data
+#Load the libraries
 import pandas as pd
 import numpy as np
 
 
 #Read the data
+#data = pd.read_csv("sample/sample_0.011.csv")
+####################################################TEST ON WITHOUT LOCATION VAR
+#data = pd.read_csv("pluto3.csv")
 data = pd.read_csv("sample/sample_0.011.csv")
-# drop also block and lot
+data=data.drop([#'xcoord','ycoord', #'income', # income comes when it is pluto3
+                "cd","schooldist","council","firecomp","policeprct",
+               "healtharea","sanitboro","sanitsub","zonedist1","spdist1","sanitdistrict"], axis=1)
+
 data=data.drop(['lot','block'], axis=1)
+
+
+to_factors = ["zipcode","ltdheight","landuse",
+               "ext","proxcode","irrlotcode","lottype","borocode","edesignum", "pfirm15_flag"]
+
+#Iterate thru dataset and convert columns from "to_factors" into 
+for i in to_factors: 
+    data[i] = data[i].astype('category')
+    print(i) 
+    
+    
+################################################### END OF THE TEST
+# drop also block and lot
+'''data=data.drop(['lot','block'], axis=1)
 
 
 #Scpecify what columns are factors
@@ -29,7 +48,7 @@ to_factors = ["cd","schooldist","council","zipcode","firecomp","policeprct",
 for i in to_factors: 
     data[i] = data[i].astype('category')
     print(i) 
-
+'''
 
 ##### Feature Selection #####
 #### 1. f_regression using SelectKBest
@@ -47,7 +66,7 @@ df1 = pd.concat([df1, df_dummies], axis=1)
 
 from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import f_regression
-## Select the best k predictors from data
+## Select the best k predictors from data and return a list with predictors
 def select_kbest_reg(data_frame, target, k):
     """
     Selecting K-Best features regression
@@ -80,32 +99,49 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import mean_absolute_error
 from math import sqrt
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import MinMaxScaler
 ### Use those predictors to build a tree
 def a_tree(df1, top_predictors_list):
     # X contains only predictors choosen by the function select_kbest_reg
     X = df1[top_predictors_list]
-    # y only target variables
+    
+    # create 'y' but first scale it.
+    #mms = MinMaxScaler()
+    #df1[['assessland']] = mms.fit_transform(df1[['assessland']])
+    #Scale 'y' so we can compare train/test results
     y = df1['assessland']
+    
+    #train/test split data
+    X_train, X_test, y_train, y_test = train_test_split(
+            X, y, test_size=0.20, random_state=42)
 
     #Build a tree
     reg = RandomForestRegressor(
             n_estimators=100, 
-            max_depth=100, 
-            bootstrap=True, 
+            max_depth=10, 
+            bootstrap=False, 
             random_state=123
             )
-    reg.fit(X, y)
+    reg.fit(X_train, y_train)
+    preds_train = reg.predict(X_train)
+    preds_test = reg.predict(X_test)
     
+    # Calcualte evaluation metrics for TRAIN
+    rms_train = sqrt(mean_squared_error(y_train, preds_train))
+    #mae_train = mean_absolute_error(y_train, preds_train)
     
-    # Calcualte evaluation metrics
-    preds = reg.predict(X)
-    rms = sqrt(mean_squared_error(y, preds))
-    mae = mean_absolute_error(y, preds)
+    # Calcualte evaluation metrics for TEST
+    rms_test = sqrt(mean_squared_error(y_test, preds_test))
+    #mae_test = mean_absolute_error(y_test, preds_test)
 
-    return rms, mae
+
+    return rms_train, rms_test
 
 # max number of predictors you want:
-k=10
+k=6
+error_train=[]
+error_test=[]
 for i in range(1, k+1):
     print("number of predictors",i)
 
@@ -114,8 +150,26 @@ for i in range(1, k+1):
     print(top_predictors_list)
 
     # Call the function to create a tree and give rmse
-    print('Error:',a_tree(df1, top_predictors_list))
+    err=a_tree(df1, top_predictors_list)
+    print('Error:',err)
+    error_train.append(err[0])
+    error_test.append(err[1])
 
+#Plot two errors
+from matplotlib import pyplot as plt
+## Train Set
+plt.plot(error_train)
+plt.title('Error in Train set')
+plt.xlabel('Number of predictors')
+plt.ylabel('Error')
+
+
+## Test Set
+plt.plot(error_test)
+plt.title('Error: Blue Train; Orange Test Set')
+plt.xlabel('Number of predictors')
+plt.ylabel('Error')
+plt.show()
 
 # Combined preds and actual values into one column
 actual_pred = pd.DataFrame({"pred": preds})
