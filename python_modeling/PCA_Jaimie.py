@@ -58,7 +58,7 @@ X2_ipca = ipca.fit_transform(X2)
 pca = PCA(n_components=n_components)
 X2_pca = pca.fit_transform(X2)
 
-colors = ['navy', 'turquoise', 'darkorange']
+color = list(np.random.choice(range(256), size=3))
 
 for X2_transformed, title in [(X2_ipca, "Incremental PCA"), (X2_pca, "PCA")]:
     plt.figure(figsize=(8, 8))
