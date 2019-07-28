@@ -21,6 +21,12 @@ numeric =  ["lotarea", "bldgarea","numbldgs","numfloors","unitsres","unitstotal"
 
 from scipy import stats
 data=data[(np.abs(stats.zscore(data[numeric])) < 3).all(axis=1)]
+#If you have multiple columns in your dataframe and would like to remove all rows that have
+#outliers in at least one column, the following expression would do that in one shot.
+#For each column, first it computes the Z-score of each value in the column, relative to the column mean and standard deviation.
+#Then is takes the absolute of Z-score because the direction does not matter, only if it is below the threshold.
+#all(axis=1) ensures that for each row, all column satisfy the constraint.
+#Finally, result of this condition is used to index the dataframe.
 
 ####################################################TEST ON WITHOUT LOCATION VAR
 #data = pd.read_csv("pluto3.csv")
