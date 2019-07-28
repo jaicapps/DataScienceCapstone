@@ -20,6 +20,7 @@ from sklearn.preprocessing import LabelEncoder
 le = LabelEncoder()
 #Convert those columns
 convert_for_le = to_factors
+
 #Converting in the loop
 for i in convert_for_le: 
     df[i] = le.fit_transform(df[i].astype(str))
