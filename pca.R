@@ -13,6 +13,6 @@ df1.pca$loadings
 pcs <- df1.pca$scores[,1:15]
 
 # Combining the PCs with the categorical variables of df and removing the numeric:
-df <- select(df, c(col_var))
+df <- select(df, c(col_var, "assessland", "assesstot"))
 df <- cbind(df, pcs)
 write.csv(df, file = "sample/sample_PCA.csv", row.names = FALSE)
