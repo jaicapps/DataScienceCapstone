@@ -153,7 +153,6 @@ for i in range(1, k+1):
     error_test.append(err[1])
 
 #Check min error
-min(error_train)
 min(error_test)
 
 

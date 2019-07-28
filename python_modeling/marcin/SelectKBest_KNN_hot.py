@@ -1,8 +1,8 @@
-
 # -*- coding: utf-8 -*-
 """
-Created on Thu Jul 25 21:46:17 2019
-@author: marcin
+Created on Sun Jul 28 18:18:40 2019
+
+@author: grzechu
 """
 
 ## Based on:
@@ -42,26 +42,26 @@ to_factors = ["cd","schooldist","council","zipcode","policeprct","firecomp",
                "ext","proxcode","irrlotcode","lottype","borocode","edesignum","sanitdistrict",
                "healthcenterdistrict", "pfirm15_flag"]
 
-## Make label Encoding
-from sklearn.preprocessing import LabelEncoder
-le = LabelEncoder()
-
-#Converting in the loop
-for i in to_factors: 
-    data[i] = le.fit_transform(data[i].astype(str))
-    print(i) 
-data['firecomp'].dtypes
-
-
 #Iterate thru dataset and convert columns from "to_factors" into 
 for i in to_factors: 
     data[i] = data[i].astype('category')
-    print(i)    
-data['firecomp'].dtypes    
-
-
+    print(i) 
+    
 ## Target variables is Assessland
 df1 = data.drop(['assesstot'], axis=1)
+
+## Scale only numeic
+
+numeric =  ["lotarea", "bldgarea","numbldgs","numfloors","unitsres","unitstotal","lotfront",
+            "lotdepth","bldgfront","bldgdepth","yearbuilt",
+            "residfar","commfar","facilfar","yearalter"]
+
+from sklearn.preprocessing import MinMaxScaler
+scaler = MinMaxScaler(feature_range=(0, 1))
+
+df1[numeric] = scaler.fit_transform(df1[numeric])
+df1[numeric] = pd.DataFrame(df1[numeric])
+
 
 ## Convert all to dummies, AND DELETE factors which means we do k-1 variables
 df_dummies = pd.get_dummies(df1[to_factors], drop_first=True)
@@ -106,8 +106,8 @@ def select_kbest_reg(data_frame, target, k):
 
 
 
-#### Function II -> Build the tree model
-
+#### Function II -> Build the KNN model
+from sklearn import neighbors
 ## Run random Forest with k predictors choosen by previous function
 ## and calculate the rmse    
 ### Use those predictors to build a tree
@@ -126,12 +126,11 @@ def a_tree(df1, top_predictors_list):
             X, y, test_size=0.20, random_state=42)
 
     #Build a tree
-    reg = RandomForestRegressor(
-            n_estimators=300, 
-            max_depth=100, 
-            bootstrap=True, 
-            random_state=123
-            )
+    ## I test K before and it came up the best is k=4
+    reg = neighbors.KNeighborsRegressor(n_neighbors = 4)
+
+    reg.fit(X_train, y_train)  #fit the model
+   
     reg.fit(X_train, y_train)
     preds_train = reg.predict(X_train)
     preds_test = reg.predict(X_test)
@@ -167,7 +166,6 @@ for i in range(1, k+1):
     error_test.append(err[1])
 
 #Check min error
-min(error_train)
 min(error_test)
 
 
