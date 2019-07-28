@@ -168,7 +168,7 @@ rf_random = RandomizedSearchCV(estimator = rf, param_distributions = random_grid
 rf_random.fit(x_train, y_train)
 
 #View the best parameters:
-rf_random.best_params_
+print("the output:", rf_random.best_params_)
 
 
 

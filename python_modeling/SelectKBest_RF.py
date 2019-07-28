@@ -7,43 +7,36 @@ Created on Thu Jul 25 21:46:17 2019
 ## Based on:
 # https://towardsdatascience.com/feature-selection-techniques-in-machine-learning-with-python-f24e7da3f36e
 
-#Load the libraries
+# Imports
 import pandas as pd
 import numpy as np
 
+#select_kbest_reg
+from sklearn.feature_selection import SelectKBest
+from sklearn.feature_selection import f_regression
+
+# Tree
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_absolute_error
+from math import sqrt
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import MinMaxScaler
 
 #Read the data
+
+############# Read the data and transform 
 data = pd.read_csv("sample/sample_0.011.csv")
-
-numeric =  ["lotarea", "bldgarea","numbldgs","numfloors","unitsres","unitstotal","lotfront",
-            "lotdepth","bldgfront","bldgdepth","yearbuilt",
-            "residfar","commfar","facilfar","yearalter",'assesstot','assessland']
-
-from scipy import stats
-data=data[(np.abs(stats.zscore(data[numeric])) < 3).all(axis=1)]
-
-####################################################TEST ON WITHOUT LOCATION VAR
-#data = pd.read_csv("pluto3.csv")
-#data=data.drop(['xcoord','ycoord','firecomp'], axis=1)
-
-
-## Check Outliers
-#data.boxplot(column=['assessland'])
-#data.nlargest(100, ['assessland'])['assessland']
-#data=data.loc[data['assessland'] <= 1159650]
-#data = data.reset_index()
-
-
 
 data.isnull().sum()
 
-################################################### END OF THE TEST
+
 # drop also block and lot
-data=data.drop(['lot','block','firecomp'], axis=1)
+data=data.drop(['lot','block'], axis=1)
 
 
 #Scpecify what columns are factors
-to_factors = ["cd","schooldist","council","zipcode","policeprct",
+to_factors = ["cd","schooldist","council","zipcode","policeprct","firecomp",
                "healtharea","sanitboro","sanitsub","zonedist1","spdist1","ltdheight","landuse",
                "ext","proxcode","irrlotcode","lottype","borocode","edesignum","sanitdistrict",
                "healthcenterdistrict", "pfirm15_flag"]
@@ -52,12 +45,6 @@ to_factors = ["cd","schooldist","council","zipcode","policeprct",
 for i in to_factors: 
     data[i] = data[i].astype('category')
     print(i) 
-
-
-
-##### Feature Selection #####
-#### 1. f_regression using SelectKBest
-# About the F-Test etc.: https://stats.stackexchange.com/questions/204141/difference-between-selecting-features-based-on-f-regression-and-based-on-r2
 
 ## Target variables is Assessland
 df1 = data.drop(['assesstot'], axis=1)
@@ -70,8 +57,12 @@ df1.drop(to_factors, axis=1, inplace=True)
 #Concat numeric variables wiht converted factors
 df1 = pd.concat([df1, df_dummies], axis=1)
 
-from sklearn.feature_selection import SelectKBest
-from sklearn.feature_selection import f_regression
+
+#### Function I ->  Feature Selection #####
+#### 1. f_regression using SelectKBest
+# About the F-Test etc.: https://stats.stackexchange.com/questions/204141/difference-between-selecting-features-based-on-f-regression-and-based-on-r2
+
+
 ## Select the best k predictors from data and return a list with predictors
 def select_kbest_reg(data_frame, target, k):
     """
@@ -99,14 +90,12 @@ def select_kbest_reg(data_frame, target, k):
     return predictors_list
 
 
+
+
+#### Function II -> Build the tree model
+
 ## Run random Forest with k predictors choosen by previous function
 ## and calculate the rmse    
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import mean_squared_error
-from sklearn.metrics import mean_absolute_error
-from math import sqrt
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import MinMaxScaler
 ### Use those predictors to build a tree
 def a_tree(df1, top_predictors_list):
     # X contains only predictors choosen by the function select_kbest_reg
@@ -138,17 +127,16 @@ def a_tree(df1, top_predictors_list):
     #mae_train = mean_absolute_error(y_train, preds_train)
     #mean_err_train=np.square(np.subtract(y_train, preds_train)).mean()
 
-    
     # Calcualte evaluation metrics for TEST
     rms_test = sqrt(mean_squared_error(y_test, preds_test))
     #mae_test = mean_absolute_error(y_test, preds_test)
     #mean_err_test=np.square(np.subtract(y_test, preds_test)).mean()
 
+    return rms_train, rms_test, y_train, preds_train, y_test, preds_test
 
-    return rms_train, rms_test
 
-# max number of predictors you want:
-k=30
+######## LOOP - error depends on number of predictors ######
+k=30 # check until 30 max number of pre
 error_train=[]
 error_test=[]
 for i in range(1, k+1):
@@ -160,11 +148,12 @@ for i in range(1, k+1):
 
     # Call the function to create a tree and give rmse
     err=a_tree(df1, top_predictors_list)
-    print('Error:',err)
+    print('Error train:',round(err[0],2), 'Error test:',round(err[1],2))
     error_train.append(err[0])
     error_test.append(err[1])
 
-#Plot two errors
+
+######## LINE PLOT - Error for each iteration
 from matplotlib import pyplot as plt
 ## Train Set
 plt.plot(error_train)
@@ -175,37 +164,42 @@ plt.ylabel('Error')
 
 ## Test Set
 plt.plot(error_test)
-plt.title('Error: Blue Train; Orange Test Set')
+plt.title('Error: in Test Set')
 plt.xlabel('Number of predictors')
 plt.ylabel('Error')
 plt.show()
 
-# Combined preds and actual values into one column
-train_hist = pd.DataFrame({"pred_train": preds_train})
-train_hist['y_train'] = y_train 
-
-
-from sklearn.linear_model import Lasso
-from yellowbrick.regressor import PredictionError
-
-# Instantiate the linear model and visualizer
-lasso = Lasso()
-visualizer = PredictionError(lasso)
-
-visualizer.fit(X_train, y_train)  # Fit the training data to the visualizer
-visualizer.score(X_test, y_test)  # Evaluate the model on the test data
-g = visualizer.poof() 
-
-#https://www.scikit-yb.org/en/latest/quickstart.html
 
 
 
-#### Histogram of errors
+######## HISTOGRAM - Error Difference
 import numpy as np
 import matplotlib.mlab as mlab
 import matplotlib.pyplot as plt
 
-#for test set
+
+y_train=err[2]
+preds_train=err[3]
+y_test=err[4]
+preds_test=err[5]
+
+#### Error for TRAIN set
+y_train = pd.DataFrame(y_train)
+y_train['new']=y_train.index
+pred_reg = pd.DataFrame(preds_train)
+pred_reg.index=y_train['new'].values
+y_train = y_train.drop('new',axis=1)
+pred_reg = pred_reg.rename(columns={0:'predicted'})
+x =pd.DataFrame(y_train['assessland']-pred_reg['predicted'])
+x = x.rename(columns={0:'difference'})
+done = pd.concat([x,y_train,pred_reg],axis=1)
+
+p = x['difference'].values
+type(p)
+plt.hist(p, bins='auto', range=(-10000, 10000))
+
+
+#### Error for TEST set
 y_test = pd.DataFrame(y_test)
 y_test['new']=y_test.index
 pred_reg = pd.DataFrame(preds_test)
@@ -220,18 +214,3 @@ p = x['difference'].values
 type(p)
 plt.hist(p, bins='auto', range=(-10000, 10000))
 
-
-#for train set
-y_train = pd.DataFrame(y_train)
-y_train['new']=y_train.index
-pred_reg = pd.DataFrame(preds_train)
-pred_reg.index=y_train['new'].values
-y_train = y_train.drop('new',axis=1)
-pred_reg = pred_reg.rename(columns={0:'predicted'})
-x =pd.DataFrame(y_train['assessland']-pred_reg['predicted'])
-x = x.rename(columns={0:'difference'})
-done = pd.concat([x,y_train,pred_reg],axis=1)
-
-p = x['difference'].values
-type(p)
-plt.hist(p, bins='auto', range=(-10000, 10000))

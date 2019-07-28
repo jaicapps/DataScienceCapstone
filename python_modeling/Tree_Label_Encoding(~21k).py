@@ -11,8 +11,6 @@ numeric =  ["lotarea", "bldgarea","numbldgs","numfloors","unitsres","unitstotal"
             "lotdepth","bldgfront","bldgdepth","yearbuilt",
             "residfar","commfar","facilfar","yearalter"]
 
-from scipy import stats
-data=data[(np.abs(stats.zscore(data[numeric])) < 3).all(axis=1)]
 
 
 ####################################################TEST ON WITHOUT LOCATION VAR
@@ -31,11 +29,11 @@ data.isnull().sum()
 
 ################################################### END OF THE TEST
 # drop also block and lot
-data=data.drop(['lot','block','firecomp'], axis=1)
+data=data.drop(['lot','block'], axis=1)
 
 
 #Scpecify what columns are factors
-to_factors = ["cd","schooldist","council","zipcode","policeprct",
+to_factors = ["cd","schooldist","council","zipcode","policeprct",'firecomp',
                "healtharea","sanitboro","sanitsub","zonedist1","spdist1","ltdheight","landuse",
                "ext","proxcode","irrlotcode","lottype","borocode","edesignum","sanitdistrict",
                "healthcenterdistrict", "pfirm15_flag"]
