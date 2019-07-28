@@ -71,3 +71,4 @@ import matplotlib.pyplot as plt
 p = x['difference'].values
 type(p)
 
+plt.hist(p, bins='auto', range=(-100000, 100000))
