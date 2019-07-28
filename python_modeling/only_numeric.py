@@ -1,11 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Jul 25 21:46:17 2019
-@author: marcin
-"""
-
-## Based on:
-# https://towardsdatascience.com/feature-selection-techniques-in-machine-learning-with-python-f24e7da3f36e
 
 #Load the libraries
 import pandas as pd
@@ -17,10 +9,13 @@ data = pd.read_csv("sample/sample_0.011.csv")
 
 numeric =  ["lotarea", "bldgarea","numbldgs","numfloors","unitsres","unitstotal","lotfront",
             "lotdepth","bldgfront","bldgdepth","yearbuilt",
-            "residfar","commfar","facilfar","yearalter",'assesstot','assessland']
+            "residfar","commfar","facilfar","yearalter", 'assessland']
 
 from scipy import stats
 data=data[(np.abs(stats.zscore(data[numeric])) < 3).all(axis=1)]
+
+data=data[numeric]
+df1=data
 
 ####################################################TEST ON WITHOUT LOCATION VAR
 #data = pd.read_csv("pluto3.csv")
@@ -34,41 +29,13 @@ data=data[(np.abs(stats.zscore(data[numeric])) < 3).all(axis=1)]
 #data = data.reset_index()
 
 
-
 data.isnull().sum()
-
-################################################### END OF THE TEST
-# drop also block and lot
-data=data.drop(['lot','block','firecomp'], axis=1)
-
-
-#Scpecify what columns are factors
-to_factors = ["cd","schooldist","council","zipcode","policeprct",
-               "healtharea","sanitboro","sanitsub","zonedist1","spdist1","ltdheight","landuse",
-               "ext","proxcode","irrlotcode","lottype","borocode","edesignum","sanitdistrict",
-               "healthcenterdistrict", "pfirm15_flag"]
-
-#Iterate thru dataset and convert columns from "to_factors" into 
-for i in to_factors: 
-    data[i] = data[i].astype('category')
-    print(i) 
-
-
 
 ##### Feature Selection #####
 #### 1. f_regression using SelectKBest
 # About the F-Test etc.: https://stats.stackexchange.com/questions/204141/difference-between-selecting-features-based-on-f-regression-and-based-on-r2
 
-## Target variables is Assessland
-df1 = data.drop(['assesstot'], axis=1)
 
-## Convert all to dummies, AND DELETE factors which means we do k-1 variables
-df_dummies = pd.get_dummies(df1[to_factors], drop_first=True)
-#Drop old factors from the dataset (oryginal one, those not one-hot encoded)
-df1.drop(to_factors, axis=1, inplace=True)
-
-#Concat numeric variables wiht converted factors
-df1 = pd.concat([df1, df_dummies], axis=1)
 
 from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import f_regression
@@ -168,36 +135,17 @@ for i in range(1, k+1):
 from matplotlib import pyplot as plt
 ## Train Set
 plt.plot(error_train)
-plt.title('Error in Train set')
+plt.title('Error Train and Test (train)' )
 plt.xlabel('Number of predictors')
 plt.ylabel('Error')
 
 
 ## Test Set
 plt.plot(error_test)
-plt.title('Error: Blue Train; Orange Test Set')
+plt.title('Error: Train and Test')
 plt.xlabel('Number of predictors')
 plt.ylabel('Error')
 plt.show()
-
-# Combined preds and actual values into one column
-train_hist = pd.DataFrame({"pred_train": preds_train})
-train_hist['y_train'] = y_train 
-
-
-from sklearn.linear_model import Lasso
-from yellowbrick.regressor import PredictionError
-
-# Instantiate the linear model and visualizer
-lasso = Lasso()
-visualizer = PredictionError(lasso)
-
-visualizer.fit(X_train, y_train)  # Fit the training data to the visualizer
-visualizer.score(X_test, y_test)  # Evaluate the model on the test data
-g = visualizer.poof() 
-
-#https://www.scikit-yb.org/en/latest/quickstart.html
-
 
 
 #### Histogram of errors
@@ -218,7 +166,8 @@ done = pd.concat([x,y_test,pred_reg],axis=1)
 
 p = x['difference'].values
 type(p)
-plt.hist(p, bins='auto', range=(-10000, 10000))
+plt.title('Error Diff in Test set')
+plt.hist(p, bins='auto', range=(-50000, 50000))
 
 
 #for train set
@@ -234,4 +183,5 @@ done = pd.concat([x,y_train,pred_reg],axis=1)
 
 p = x['difference'].values
 type(p)
-plt.hist(p, bins='auto', range=(-10000, 10000))
+plt.title('Error Diff in Train set')
+plt.hist(p, bins='auto', range=(-50000, 50000))
