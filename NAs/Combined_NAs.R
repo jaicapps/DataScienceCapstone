@@ -113,7 +113,13 @@ levels(df$council) # 51 levels
 # firecomp
 class(df$firecomp)
 table(is.na(df$firecomp)) # No NAs
-levels(df$firecomp) # 349 levels
+table(df$firecomp=="")
+# 102 blanks replaced with NAs:
+df$firecomp[df$firecomp==""] <- NA
+# Replace 102 NAs with random firecomp values of the corresponding zipcode:
+df$firecomp[is.na(df$firecomp)] <- (fill_NAs_by_zipcode(df,"firecomp"))
+df$firecomp <- droplevels(df$firecomp)
+levels(df$firecomp) # 348 levels
 #######################################################################################################################################
 
 # policeprct
