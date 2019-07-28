@@ -134,18 +134,18 @@ def a_tree(df1, top_predictors_list):
     preds_test = reg.predict(X_test)
     
     # Calcualte evaluation metrics for TRAIN
-    #rms_train = sqrt(mean_squared_error(y_train, preds_train))
-    mae_train = mean_absolute_error(y_train, preds_train)
+    rms_train = sqrt(mean_squared_error(y_train, preds_train))
+    #mae_train = mean_absolute_error(y_train, preds_train)
     #mean_err_train=np.square(np.subtract(y_train, preds_train)).mean()
 
     
     # Calcualte evaluation metrics for TEST
-    #rms_test = sqrt(mean_squared_error(y_test, preds_test))
-    mae_test = mean_absolute_error(y_test, preds_test)
+    rms_test = sqrt(mean_squared_error(y_test, preds_test))
+    #mae_test = mean_absolute_error(y_test, preds_test)
     #mean_err_test=np.square(np.subtract(y_test, preds_test)).mean()
 
 
-    return mae_train, mae_test
+    return rms_train, rms_test
 
 # max number of predictors you want:
 k=30

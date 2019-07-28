@@ -11,20 +11,23 @@ data = pd.read_csv("sample/sample_0.011.csv")
 
 
 ## Check Outliers
-data.boxplot(column=['assessland'])
-data.nlargest(100, ['assessland'])['assessland']
-data=data.loc[data['assessland'] <= 1159650]
+numeric =  ["lotarea", "bldgarea","numbldgs","numfloors","unitsres","unitstotal","lotfront",
+            "lotdepth","bldgfront","bldgdepth","yearbuilt",
+            "residfar","commfar","facilfar","yearalter"]
+
+from scipy import stats
+data=data[(np.abs(stats.zscore(data[numeric])) < 3).all(axis=1)]
 #data = data.reset_index()
 
 data.isnull().sum()
 
 ################################################### END OF THE TEST
 # drop also block and lot
-data=data.drop(['lot','block'], axis=1)
+data=data.drop(['lot','block', 'firecomp'], axis=1)
 
 
 #Scpecify what columns are factors
-to_factors = ["cd","schooldist","council","zipcode","firecomp","policeprct",
+to_factors = ["cd","schooldist","council","zipcode","policeprct",
                "healtharea","sanitboro","sanitsub","zonedist1","spdist1","ltdheight","landuse",
                "ext","proxcode","irrlotcode","lottype","borocode","edesignum","sanitdistrict",
                "healthcenterdistrict", "pfirm15_flag"]
@@ -111,21 +114,21 @@ def a_tree(df1, top_predictors_list):
     preds_test = ridgeReg.predict(X_test)
 
     # Calcualte evaluation metrics for TRAIN
-    #rms_train = sqrt(mean_squared_error(y_train, preds_train))
-    mae_train = mean_absolute_error(y_train, preds_train)
+    rms_train = sqrt(mean_squared_error(y_train, preds_train))
+    #mae_train = mean_absolute_error(y_train, preds_train)
     #mean_err_train=np.square(np.subtract(y_train, preds_train)).mean()
 
     
     # Calcualte evaluation metrics for TEST
-    #rms_test = sqrt(mean_squared_error(y_test, preds_test))
-    mae_test = mean_absolute_error(y_test, preds_test)
+    rms_test = sqrt(mean_squared_error(y_test, preds_test))
+    #mae_test = mean_absolute_error(y_test, preds_test)
     #mean_err_test=np.square(np.subtract(y_test, preds_test)).mean()
 
 
-    return mae_train, mae_test
+    return rms_train, rms_test
 
 # max number of predictors you want:
-k=400
+k=60
 error_train=[]
 error_test=[]
 for i in range(1, k+1):
