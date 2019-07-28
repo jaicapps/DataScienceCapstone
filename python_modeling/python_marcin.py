@@ -21,7 +21,6 @@ numeric =  ["lotarea", "bldgarea","numbldgs","numfloors","unitsres","unitstotal"
 
 from scipy import stats
 data=data[(np.abs(stats.zscore(data[numeric])) < 3).all(axis=1)]
-#df1=df1.reset_index(drop=True)
 
 ####################################################TEST ON WITHOUT LOCATION VAR
 #data = pd.read_csv("pluto3.csv")
