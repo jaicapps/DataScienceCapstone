@@ -35,27 +35,21 @@ to_factors = ["cd","schooldist","council","zipcode","policeprct","firecomp",
                "ext","proxcode","irrlotcode","lottype","borocode","edesignum","sanitdistrict",
                "healthcenterdistrict", "pfirm15_flag"]
 
-## Make label Encoding
-from sklearn.preprocessing import LabelEncoder
-le = LabelEncoder()
-
-#Converting in the loop
-for i in to_factors: 
-    data[i] = le.fit_transform(data[i].astype(str))
-    print(i) 
-data['firecomp'].dtypes
-
-
 #Iterate thru dataset and convert columns from "to_factors" into 
 for i in to_factors: 
     data[i] = data[i].astype('category')
-    print(i)    
-data['firecomp'].dtypes    
-
+    print(i) 
 
 ## Target variables is Assessland
 df1 = data.drop(['assesstot'], axis=1)
 
+## Convert all to dummies, AND DELETE factors which means we do k-1 variables
+df_dummies = pd.get_dummies(df1[to_factors], drop_first=True)
+#Drop old factors from the dataset (oryginal one, those not one-hot encoded)
+df1.drop(to_factors, axis=1, inplace=True)
+
+#Concat numeric variables wiht converted factors
+df1 = pd.concat([df1, df_dummies], axis=1)
 
 
 #### Function I ->  Feature Selection #####
@@ -153,7 +147,7 @@ for i in range(1, k+1):
     error_test.append(err[1])
 
 #Check min error
-min(error_test) # 37279.42 for test and 16063.96 for train - 13 predictors
+min(error_test) # 47597.70 for test and 18547.69 for train
 
 
 ######## LINE PLOT - Error for each iteration
@@ -216,3 +210,4 @@ done = pd.concat([x,y_test,pred_reg],axis=1)
 p = x['difference'].values
 type(p)
 plt.hist(p, bins='auto', range=(-10000, 10000))
+

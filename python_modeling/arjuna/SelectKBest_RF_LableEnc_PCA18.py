@@ -20,7 +20,7 @@ from sklearn.preprocessing import MinMaxScaler
 #Read the data
 
 ############# Read the data and transform 
-data = pd.read_csv("sample/sample_PCA.csv")
+data = pd.read_csv("sample/sample_PCA18.csv")
 
 data.isnull().sum()
 
