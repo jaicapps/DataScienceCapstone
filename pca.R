@@ -1,5 +1,20 @@
-source("libraries.R")
-df <- read.csv("sample/sample_0.011.csv")
+#Data Munging
+library(dplyr)
+library(readr)
+library(readxl)
+
+#Data Visualization
+library(ggplot2)
+
+#Simulation
+library(triangle)
+
+# Modeling
+library(randomForest)
+
+#Clustering
+library(mclust)
+df <- read.csv("documents/Github/Capstone/sample/sample_0.011.csv")
 col_var <- c("block","lot","cd","schooldist","council","zipcode","firecomp","policeprct",
              "healtharea","sanitboro","sanitsub","zonedist1","spdist1","ltdheight","landuse",
              "ext","proxcode","irrlotcode","lottype","borocode","edesignum","sanitdistrict",
@@ -17,5 +32,5 @@ pcs1 <- df1.pca$scores[,1:18]
 df <- select(df, c(col_var, "assessland", "assesstot"))
 df <- cbind(df, pcs)
 df2 <- cbind(df, pcs1)
-write.csv(df, file = "sample/sample_PCA.csv", row.names = FALSE)
-write.csv(df2, file = "sample/sample_PCA18.csv", row.names = FALSE)
+write.csv(df, file = "desktop/sample_PCA.csv", row.names = FALSE)
+write.csv(df2, file = "desktop/sample_PCA18.csv", row.names = FALSE)
