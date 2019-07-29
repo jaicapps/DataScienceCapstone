@@ -27,8 +27,8 @@ numeric =  ["lotarea", "bldgarea","numbldgs","numfloors","unitsres","unitstotal"
 for i in to_factors: 
     data[i] = data[i].astype('category')
     print(i) 
-## Target variables is Assessland
-df1 = data.drop(['assesstot'], axis=1)
+## Target variables is assesstot
+df1 = data.drop(['assessland'], axis=1)
 ## Convert all to dummies, AND DELETE factors which means we do k-1 variables
 df_dummies = pd.get_dummies(df1[to_factors], drop_first=True)
 #Drop old factors from the dataset (oryginal one, those not one-hot encoded)
@@ -37,8 +37,8 @@ scaler = MinMaxScaler()
 df1[numeric] = scaler.fit_transform(df1[numeric])
 #Concat numeric variables wiht converted factors
 df1 = pd.concat([df1, df_dummies], axis=1)
-X = df1.drop(['assessland'], axis=1)
-y = df1['assessland']
+X = df1.drop(['assesstot'], axis=1)
+y = data['assesstot']
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=123)
 #sc = StandardScaler()
 #X_train = sc.fit_transform(X_train)
@@ -57,7 +57,7 @@ pred_reg = pd.DataFrame(pred_reg)
 pred_reg.index=y_test['new'].values
 y_test = y_test.drop('new',axis=1)
 pred_reg = pred_reg.rename(columns={0:'predicted'})
-x =pd.DataFrame(y_test['assessland']-pred_reg['predicted'])
+x =pd.DataFrame(y_test['assesstot']-pred_reg['predicted'])
 x = x.rename(columns={0:'difference'})
 done = pd.concat([x,y_test,pred_reg],axis=1)
 
