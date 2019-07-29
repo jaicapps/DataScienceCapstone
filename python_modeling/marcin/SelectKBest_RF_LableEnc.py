@@ -120,10 +120,20 @@ def a_tree(df1, top_predictors_list):
 
     #Build a tree
     reg = RandomForestRegressor(
-            n_estimators=300, 
-            max_depth=100, 
-            bootstrap=True, 
-            random_state=123
+            ## OLD VALUES
+            #n_estimators=300, 
+            #max_depth=100, 
+            #bootstrap=True, 
+            #random_state=123
+            
+            #NEW VALUES
+             n_estimators= 1000, 
+             min_samples_split= 5, 
+             min_samples_leaf= 2, 
+             max_features ='sqrt', 
+             max_depth =100, 
+             bootstrap =False,
+             random_state=123
             )
     reg.fit(X_train, y_train)
     preds_train = reg.predict(X_train)

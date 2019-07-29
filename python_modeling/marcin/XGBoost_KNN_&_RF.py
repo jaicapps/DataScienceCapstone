@@ -18,6 +18,18 @@ to_factors = ["cd","schooldist","council","zipcode","policeprct","firecomp",
                "ext","proxcode","irrlotcode","lottype","borocode","edesignum","sanitdistrict",
                "healthcenterdistrict", "pfirm15_flag"]
 
+## Make label Encoding
+from sklearn.preprocessing import LabelEncoder
+le = LabelEncoder()
+
+#Converting in the loop
+for i in to_factors: 
+    data[i] = le.fit_transform(data[i].astype(str))
+    print(i) 
+data['firecomp'].dtypes
+
+
+
 #Iterate thru dataset and convert columns from "to_factors" into 
 for i in to_factors: 
     data[i] = data[i].astype('category')
@@ -25,9 +37,9 @@ for i in to_factors:
 
 
 # Dummies
-df_dummies = pd.get_dummies(data[to_factors], drop_first=True)
-data.drop(to_factors, axis=1, inplace=True)
-data = pd.concat([data, df_dummies], axis=1)
+#df_dummies = pd.get_dummies(data[to_factors], drop_first=True)
+#data.drop(to_factors, axis=1, inplace=True)
+#data = pd.concat([data, df_dummies], axis=1)
 
 
 # split data into X and y
@@ -132,6 +144,7 @@ curve.plot()
 import numpy as np
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import RandomizedSearchCV
+from pprint import pprint
 
 # Choose the best parameters for tree using CV:
 
@@ -159,21 +172,33 @@ random_grid = {'n_estimators': n_estimators,
 pprint(random_grid)
 
 
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(
+            X, y, test_size=0.20, random_state=42)
+
 # Use the random grid to search for best hyperparameters
 # First create the base model to tune
 rf = RandomForestRegressor()
 # Random search of parameters, using 3 fold cross validation, 
 # search across 100 different combinations, and use all available cores
-rf_random = RandomizedSearchCV(estimator = rf, param_distributions = random_grid, n_iter = 100, cv = 3, verbose=2, random_state=42, n_jobs = -1)# Fit the random search model
-rf_random.fit(x_train, y_train)
+rf_random = RandomizedSearchCV(estimator = rf, param_distributions = random_grid, n_iter = 50, cv = 3, verbose=2, random_state=42, n_jobs = -1)# Fit the random search model
+rf_random.fit(X_train, y_train)
 
 #View the best parameters:
 print("the output:", rf_random.best_params_)
 
+### SOLUTION, BEST PARAMETERS
+the output: {'n_estimators': 1000, 
+             'min_samples_split': 5, 
+             'min_samples_leaf': 2, 
+             'max_features': 'sqrt', 
+             'max_depth': 100, 
+             'bootstrap': False}
 
 
 
-# MY CODE
+
+######## MY CODE
 reg = RandomForestRegressor(
             n_estimators=100, 
             max_depth=50, 
@@ -192,6 +217,5 @@ sqrt(mean_squared_error(y_test, preds_test))
 
 # ANSWER: Smallers RMSE for the random forest: 55961.89767176862
 
-from pprint import pprint
 print('Parameters currently in use:\n')
 pprint(reg.get_params())
