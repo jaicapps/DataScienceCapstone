@@ -8,26 +8,46 @@ Created on Sat Jul 27 17:18:18 2019
 
 ###### PCA #######
 # Feature Extraction with PCA
-import numpy as np
+import matplotlib.pyplot as plt
 import pandas as pd
+import numpy as np
+from sklearn.preprocessing import scale
 from sklearn.decomposition import PCA
+
 data = pd.read_csv("Documents/GitHub/Capstone/sample/sample_0.011.csv")
-data=data.drop([#'xcoord','ycoord', #'income', # income comes when it is pluto3
-                "cd","schooldist","council","firecomp","policeprct",
-               "healtharea","sanitboro","sanitsub","zonedist1","spdist1","irrlotcode","sanitdistrict"], axis=1)
-
+data.isnull().sum()
 data=data.drop(['lot','block'], axis=1)
+numeric =  ["lotarea", "bldgarea","numbldgs","numfloors","unitsres","unitstotal","lotfront",
+            "lotdepth","bldgfront","bldgdepth","yearbuilt",
+            "residfar","commfar","facilfar","yearalter"]
 
-
-to_factors = ["zipcode","ltdheight","landuse",
-               "ext","proxcode","lottype","borocode","edesignum", "pfirm15_flag"]
+to_factors = ["cd","schooldist","council","zipcode","policeprct",
+              "healtharea","sanitboro","sanitsub","zonedist1","spdist1","ltdheight","landuse",
+              "ext","proxcode","irrlotcode","lottype","borocode","edesignum","sanitdistrict",
+              "healthcenterdistrict", "pfirm15_flag"]
 
 #Iterate thru dataset and convert columns from "to_factors" into 
 for i in to_factors: 
     data[i] = data[i].astype('category')
     print(i) 
     
- 
+
+
+########################################    
+# Keep numeric variables for assessland and assesstot predictions:
+df = data.drop(["assessland"], axis=1)
+df = df + numeric
+X=df.values
+
+
+pca = PCA(n_components=30)
+
+pca.fit(X)
+df.pca <- princomp(df, cor = T) # cor=T for scaled data
+df.pca$loadings
+
+
+########################################
 # load data
 array = np.array(data)
 data.columns
@@ -44,11 +64,6 @@ print(fit.components_)
 
 
 
-
-##### Feature Selection #####
-#### 1. f_regression using SelectKBest
-# About the F-Test etc.: https://stats.stackexchange.com/questions/204141/difference-between-selecting-features-based-on-f-regression-and-based-on-r2
-
 ## Target variables is Assessland
 df1 = data.drop(['assesstot'], axis=1)
 
@@ -60,8 +75,12 @@ df1.drop(to_factors, axis=1, inplace=True)
 #Concat numeric variables wiht converted factors
 df1 = pd.concat([df1, df_dummies], axis=1)
 
-from sklearn.feature_selection import SelectKBest
-from sklearn.feature_selection import f_regression
+
+#### Function I ->  Feature Selection #####
+#### 1. f_regression using SelectKBest
+# About the F-Test etc.: https://stats.stackexchange.com/questions/204141/difference-between-selecting-features-based-on-f-regression-and-based-on-r2
+
+
 ## Select the best k predictors from data and return a list with predictors
 def select_kbest_reg(data_frame, target, k):
     """
@@ -88,12 +107,13 @@ def select_kbest_reg(data_frame, target, k):
     
     return predictors_list
 
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import mean_squared_error
-from sklearn.metrics import mean_absolute_error
-from math import sqrt
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import MinMaxScaler
+
+
+
+#### Function II -> Build the tree model
+
+## Run random Forest with k predictors choosen by previous function
+## and calculate the rmse    
 ### Use those predictors to build a tree
 def a_tree(df1, top_predictors_list):
     # X contains only predictors choosen by the function select_kbest_reg
@@ -125,17 +145,16 @@ def a_tree(df1, top_predictors_list):
     #mae_train = mean_absolute_error(y_train, preds_train)
     #mean_err_train=np.square(np.subtract(y_train, preds_train)).mean()
 
-    
     # Calcualte evaluation metrics for TEST
     rms_test = sqrt(mean_squared_error(y_test, preds_test))
     #mae_test = mean_absolute_error(y_test, preds_test)
     #mean_err_test=np.square(np.subtract(y_test, preds_test)).mean()
 
+    return rms_train, rms_test, y_train, preds_train, y_test, preds_test
 
-    return rms_train, rms_test
 
-# max number of predictors you want:
-k=30
+######## LOOP - error depends on number of predictors ######
+k=30 # check until 30 max number of pre
 error_train=[]
 error_test=[]
 for i in range(1, k+1):
@@ -147,11 +166,16 @@ for i in range(1, k+1):
 
     # Call the function to create a tree and give rmse
     err=a_tree(df1, top_predictors_list)
-    print('Error:',err)
+    print('Error train:',round(err[0],2), 'Error test:',round(err[1],2))
     error_train.append(err[0])
     error_test.append(err[1])
 
-#Plot two errors
+#Check min error
+min(error_train)
+min(error_test)
+
+
+######## LINE PLOT - Error for each iteration
 from matplotlib import pyplot as plt
 ## Train Set
 plt.plot(error_train)
@@ -162,50 +186,54 @@ plt.ylabel('Error')
 
 ## Test Set
 plt.plot(error_test)
-plt.title('Error: Blue Train; Orange Test Set')
+plt.title('Error: in Test Set')
 plt.xlabel('Number of predictors')
 plt.ylabel('Error')
 plt.show()
+
+
+
+
+######## HISTOGRAM - Error Difference
+import numpy as np
+import matplotlib.mlab as mlab
+import matplotlib.pyplot as plt
+
+
+y_train=err[2]
+preds_train=err[3]
+y_test=err[4]
+preds_test=err[5]
+
+#### Error for TRAIN set
+y_train = pd.DataFrame(y_train)
+y_train['new']=y_train.index
+pred_reg = pd.DataFrame(preds_train)
+pred_reg.index=y_train['new'].values
+y_train = y_train.drop('new',axis=1)
+pred_reg = pred_reg.rename(columns={0:'predicted'})
+x =pd.DataFrame(y_train['assessland']-pred_reg['predicted'])
+x = x.rename(columns={0:'difference'})
+done = pd.concat([x,y_train,pred_reg],axis=1)
+
+p = x['difference'].values
+type(p)
+plt.hist(p, bins='auto', range=(-10000, 10000))
+
+
+#### Error for TEST set
+y_test = pd.DataFrame(y_test)
+y_test['new']=y_test.index
+pred_reg = pd.DataFrame(preds_test)
+pred_reg.index=y_test['new'].values
+y_test = y_test.drop('new',axis=1)
+pred_reg = pred_reg.rename(columns={0:'predicted'})
+x =pd.DataFrame(y_test['assessland']-pred_reg['predicted'])
+x = x.rename(columns={0:'difference'})
+
 ######################## RMSE ###########################
 from sklearn.metrics import mean_squared_error
 from math import sqrt
 
 rmse = sqrt(mean_squared_error(y_train, preds_train))
 rmse = sqrt(mean_squared_error(y_train, preds_test))
-
-############################ Incremental PCA ###############33
-import numpy as np
-import matplotlib.pyplot as plt
-from sklearn.decomposition import PCA, IncrementalPCA
-
-data = pd.DataFrame(data)
-X2 = data.data
-Y2 = data.target
-
-n_components = 3
-ipca = IncrementalPCA(n_components=n_components, batch_size=10)
-X2_ipca = ipca.fit_transform(X2)
-
-pca = PCA(n_components=n_components)
-X2_pca = pca.fit_transform(X2)
-
-color = list(np.random.choice(range(256), size=3))
-
-for X2_transformed, title in [(X2_ipca, "Incremental PCA"), (X2_pca, "PCA")]:
-    plt.figure(figsize=(8, 8))
-    for color, i, target_name in zip(colors, [0, 1, 2], data.target_names):
-        plt.scatter(X2_transformed[y == i, 0], X2_transformed[y == i, 1],
-                    color=color, lw=2, label=target_name)
-
-    if "Incremental" in title:
-        err = np.abs(np.abs(X2_pca) - np.abs(X2_ipca)).mean()
-        plt.title(title + " of iris dataset\nMean absolute unsigned error "
-                  "%.6f" % err)
-    else:
-        plt.title(title + " of iris dataset")
-    plt.legend(loc="best", shadow=False, scatterpoints=1)
-    plt.axis([0, 26, 0, 26])
-
-plt.show()
-
-
