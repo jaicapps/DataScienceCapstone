@@ -11,8 +11,11 @@ df1.pca <- princomp(df1, cor = T) # cor=T for scaled data
 df1.pca$loadings
 
 pcs <- df1.pca$scores[,1:15]
+pcs1 <- df1.pca$scores[,1:18]
 
 # Combining the PCs with the categorical variables of df and removing the numeric:
-df <- select(df, c(col_var))
+df <- select(df, c(col_var, "assessland", "assesstot"))
 df <- cbind(df, pcs)
+df2 <- cbind(df, pcs1)
 write.csv(df, file = "sample/sample_PCA.csv", row.names = FALSE)
+write.csv(df2, file = "sample/sample_PCA18.csv", row.names = FALSE)
