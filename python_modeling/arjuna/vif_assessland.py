@@ -2,7 +2,7 @@ import pandas as pd
 from statsmodels.stats.outliers_influence import variance_inflation_factor
 from statsmodels.tools.tools import add_constant
 
-df = pd.read_csv("sample/sample_0.011.csv")
+df = pd.read_csv("Dependencies/sample.csv")
 
 to_factors = [ "cd", "firecomp", "schooldist","council","zipcode","policeprct",
                "healtharea","sanitboro","sanitsub","zonedist1","spdist1","ltdheight","landuse",
@@ -15,12 +15,12 @@ df = df.drop(['lot','block'], axis=1)
 # Removing factors:
 X = df.drop(to_factors, axis = 1)
 
-# For predicting assessland:
-X = df.drop('assesstot', axis = 1)
-X = df.drop('assessland', axis = 1)
+# Since we predict assessland and assesstot:
+X = X.drop('assesstot', axis = 1)
+X = X.drop('assessland', axis = 1)
 X = add_constant(X)
-y = df['assessland']
-l1 = []
+l = []
+X.info()
 
 # We don't consider index = 0 since it is the const VIF value
 while True:
@@ -38,4 +38,4 @@ while True:
 vif.round(1)
 
 # The deleted variables are:
-l1
+l
