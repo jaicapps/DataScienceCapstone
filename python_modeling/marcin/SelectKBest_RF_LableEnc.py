@@ -204,21 +204,6 @@ preds_train=err[3]
 y_test=err[4]
 preds_test=err[5]
 
-#### Error for TRAIN set
-y_train = pd.DataFrame(y_train)
-y_train['new']=y_train.index
-pred_reg = pd.DataFrame(preds_train)
-pred_reg.index=y_train['new'].values
-y_train = y_train.drop('new',axis=1)
-pred_reg = pred_reg.rename(columns={0:'predicted'})
-x =pd.DataFrame(y_train['assessland']-pred_reg['predicted'])
-x = x.rename(columns={0:'difference'})
-done = pd.concat([x,y_train,pred_reg],axis=1)
-
-p = x['difference'].values
-type(p)
-plt.hist(p, bins='auto', range=(-10000, 10000))
-
 
 #### Error for TEST set
 y_test = pd.DataFrame(y_test)
@@ -230,6 +215,22 @@ pred_reg = pred_reg.rename(columns={0:'predicted'})
 x =pd.DataFrame(y_test['assessland']-pred_reg['predicted'])
 x = x.rename(columns={0:'difference'})
 done = pd.concat([x,y_test,pred_reg],axis=1)
+
+p = x['difference'].values
+type(p)
+plt.hist(p, bins='auto', range=(-10000, 10000))
+
+
+#### Error for TRAIN set
+y_train = pd.DataFrame(y_train)
+y_train['new']=y_train.index
+pred_reg = pd.DataFrame(preds_train)
+pred_reg.index=y_train['new'].values
+y_train = y_train.drop('new',axis=1)
+pred_reg = pred_reg.rename(columns={0:'predicted'})
+x =pd.DataFrame(y_train['assessland']-pred_reg['predicted'])
+x = x.rename(columns={0:'difference'})
+done = pd.concat([x,y_train,pred_reg],axis=1)
 
 p = x['difference'].values
 type(p)

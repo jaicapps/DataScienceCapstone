@@ -188,12 +188,12 @@ rf_random.fit(X_train, y_train)
 print("the output:", rf_random.best_params_)
 
 ### SOLUTION, BEST PARAMETERS
-the output: {'n_estimators': 1000, 
+'''the output: {'n_estimators': 1000, 
              'min_samples_split': 5, 
              'min_samples_leaf': 2, 
              'max_features': 'sqrt', 
              'max_depth': 100, 
-             'bootstrap': False}
+             'bootstrap': False}'''
 
 
 
