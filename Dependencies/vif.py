@@ -2,7 +2,7 @@ import pandas as pd
 from statsmodels.stats.outliers_influence import variance_inflation_factor
 from statsmodels.tools.tools import add_constant
 
-df = pd.read_csv("sample/sample_0.011.csv")
+df = pd.read_csv("Dependencies/sample.csv")
 
 to_factors = [ "cd", "firecomp", "schooldist","council","zipcode","policeprct",
                "healtharea","sanitboro","sanitsub","zonedist1","spdist1","ltdheight","landuse",
@@ -12,15 +12,26 @@ to_factors = [ "cd", "firecomp", "schooldist","council","zipcode","policeprct",
 # Deleting block and lot since it provides too much details:
 df = df.drop(['lot','block'], axis=1)
 
-# Removing factors:
-X = df.drop(to_factors, axis = 1)
+# Converting to factors:
+#Iterate thru dataset and convert columns from "to_factors" into 
+for i in to_factors: 
+    df[i] = df[i].astype('category')
+    print(i) 
+
+## Convert all to dummies, AND DELETE factors which means we do k-1 variables
+df_dummies = pd.get_dummies(df[to_factors], drop_first=True)
+#Drop old factors from the dataset (oryginal one, those not one-hot encoded)
+df.drop(to_factors, axis=1, inplace=True)
+
+#Concat numeric variables wiht converted factors
+df = pd.concat([df, df_dummies], axis=1)
 
 # For predicting assessland:
-X = df.drop('assesstot', axis = 1)
-X = df.drop('assessland', axis = 1)
+X = df
+X = X.drop('assesstot', axis = 1)
+X = X.drop('assessland', axis = 1)
 X = add_constant(X)
-y = df['assessland']
-l1 = []
+
 
 # We don't consider index = 0 since it is the const VIF value
 while True:
