@@ -16,12 +16,12 @@ Created on Thu Jul 25 19:20:04 2019
 
 # Feature Extraction with Univariate Statistical Tests (Chi-squared for classification)
 import pandas as pd
-import numpy
+import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
 import tensorflow as tf
 import matplotlib.pyplot as plt
-import numpy as np
+
 
 # load data
 df = pd.read_csv('sample_0.011.csv')

@@ -19,14 +19,14 @@ to_factors = ["cd","schooldist","council","zipcode","policeprct","firecomp",
                "healthcenterdistrict", "pfirm15_flag"]
 
 ## Make label Encoding
-from sklearn.preprocessing import LabelEncoder
-le = LabelEncoder()
+#from sklearn.preprocessing import LabelEncoder
+#le = LabelEncoder()
 
 #Converting in the loop
-for i in to_factors: 
-    data[i] = le.fit_transform(data[i].astype(str))
-    print(i) 
-data['firecomp'].dtypes
+#for i in to_factors: 
+#    data[i] = le.fit_transform(data[i].astype(str))
+#    print(i) 
+#data['firecomp'].dtypes
 
 
 
@@ -37,9 +37,9 @@ for i in to_factors:
 
 
 # Dummies
-#df_dummies = pd.get_dummies(data[to_factors], drop_first=True)
-#data.drop(to_factors, axis=1, inplace=True)
-#data = pd.concat([data, df_dummies], axis=1)
+df_dummies = pd.get_dummies(data[to_factors], drop_first=True)
+data.drop(to_factors, axis=1, inplace=True)
+data = pd.concat([data, df_dummies], axis=1)
 
 
 # split data into X and y
