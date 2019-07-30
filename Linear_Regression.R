@@ -8,15 +8,29 @@ df <- read.csv("sample/sample_0.011.csv")
 
 # Delete block and lot:
 df <- subset(df, select = -c(block,lot))
+numeric <- c("lotarea", "bldgarea","numbldgs","numfloors","unitsres","unitstotal","lotfront",
+             "lotdepth","bldgfront","bldgdepth","assessland","assesstot","yearbuilt",
+             "residfar","commfar","facilfar","xcoord","ycoord","yearalter", "income")
 
+# Convert to factors:
 df <- data_type(df)
 
 # Convert to dummies:
 dmy <- dummyVars("~.", data = df, fullRank = T)
-df <- data.frame(predict(dmy, newdata = df))
-df <- dummy.data.frame(df, sep = "_")  # 1 dummy not dropped for each category!
-# Have to convert to dummies for avoiding the error of some factors' levels present
-# in training set but not in test set.
+df <- data.frame(predict(dmy, newdata = df)) # Have to convert to dummies for avoiding 
+#the error of some factors' levels present in training set but not in test set.
+
+# Scaling numeric variables:
+# Loop over each column.
+for (colName in names(df)) {
+  
+  # Check if the column contains numeric data.
+  if(class(df[,colName]) == 'integer' | class(df[,colName]) == 'numeric') {
+    
+    # Scale this column (scale() function applies z-scaling).
+    df[,colName] <- scale(df[,colName])
+  }
+}
 
 # Since we're predicting assessland:
 df <- subset(df, select = -c(assesstot))
