@@ -66,7 +66,7 @@ plt.title('Model loss')
 plt.ylabel('loss')
 plt.xlabel('epoch')
 plt.legend(['train', 'test'], loc='upper left')
-plt.savefig('loss_nn.png')
+plt.savefig('loss_nn_assessland.png')
 plt.show()
 
 #plot y predict vs actual y for test set
@@ -77,18 +77,9 @@ fig, ax = plt.subplots()
 ax.plot(y_test, color = 'blue')
 ax.plot(y_pred, color = 'red')
 ax.legend(['Real', 'Predicted'])
-fig.savefig('real_vs_pred_nn.png')
+fig.savefig('real_vs_pred_nn_assessland.png')
 plt.show()
 
-y_pred = model.predict(x_test)
-#y_pred_money = scaler.inverse_transform(y_pred)
-#y_test_money = scaler.inverse_transform(y_test)
-fig, ax = plt.subplots()
-#ax.plot(y_test, color = 'blue')
-ax.plot(y_pred, color = 'red')
-ax.legend(['Predicted'])
-fig.savefig('real_vs_pred_nn.png')
-plt.show()
 
 def rmse(y, y_pred):
     return np.sqrt(np.mean(np.square(y - y_pred)))
