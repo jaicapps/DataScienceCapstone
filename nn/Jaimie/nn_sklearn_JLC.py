@@ -5,7 +5,6 @@ Created on Tue Jul 30 14:47:20 2019
 
 @author: jaimiecapps
 """
-
 import pandas as pd
 # Train/Test Split
 from sklearn.model_selection import train_test_split
@@ -76,11 +75,13 @@ mlp.coefs_[2]
 len(mlp.intercepts_[0]) # 7
 
 
-
-
-
-
-
+# Biases per layer
+print("Bias values for first hidden layer:")
+print(mlp.intercepts_[0])
+print("\nBias values for second hidden layer:")
+print(mlp.intercepts_[1])
+print("\nBias values for third hidden layer:")
+print(mlp.intercepts_[2])
 
 
 
