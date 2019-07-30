@@ -12,7 +12,7 @@ data_type <- function(df) {
   #Those columns should be numeric
   # numeric <- c("lotarea", "bldgarea","numbldgs","numfloors","unitsres","unitstotal","lotfront",
   #              "lotdepth","bldgfront","bldgdepth","assessland","assesstot","yearbuilt",           
-  #              "residfar","commfar","facilfar","xcoord","ycoord","yearalter")
+  #              "residfar","commfar","facilfar","xcoord","ycoord","yearalter", "income")
   
   for (i in colnames(df)) {
     if (i %in% factors) {
