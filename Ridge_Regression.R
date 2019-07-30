@@ -1,5 +1,6 @@
 # Loading the libraries required:
 library(glmnet)
+library(Metrics)
 library(dummies)
 source("data_type_fun.R")
 source("libraries.R")
@@ -9,7 +10,7 @@ df <- read.csv("sample/sample_0.011.csv")
 # Delete block and lot:
 df <- subset(df, select = -c(block,lot))
 
-# Categorical variables and converting to dummies:
+# Convert to categorical variables:
 col_var <- c("cd","schooldist","council","zipcode","firecomp","policeprct",
              "healtharea","sanitboro","sanitsub","zonedist1","spdist1","ltdheight","landuse",
              "ext","proxcode","irrlotcode","lottype","borocode","edesignum","sanitdistrict",
@@ -29,19 +30,19 @@ y_train <- data$y[train]
 x_test <- data[test, ]
 y_test <- data$y[test]
 k=5 # 5 folds in cross-validation
-grid =10^ seq (10,-2, length =100)
-fit <- cv.glmnet(model,y,k=k,lambda = grid)
-lambda_min<-fit$lambda.min #1232.847
+grid =10^ seq (4,-2, length =100)
+fit <- cv.glmnet(model,y,alpha=0,k=k,lambda = grid)
+lambda_min<-fit$lambda.min #6579.332
 newX <- model.matrix(~.-y,data=x_test)
 fit_test<-predict(fit, newx=newX,s=lambda_min)
 
-# R squared formula:
+# R squared value:
 actual <- y_test
 preds <- fit_test
 rss <- sum((preds - actual) ^ 2)
 tss <- sum((actual - mean(actual)) ^ 2)
 rsq <- 1 - rss/tss
-rsq
+rsq # 0.772
 
 # RMSE:
-rmse(actual = y_test, predicted = fit_test) #33786.3
+rmse(actual = y_test, predicted = fit_test) #42082.37
