@@ -1,3 +1,5 @@
+.ipynb_checkpoints/
+nn/__pycache__/
 pluto3.csv
 pluto4.csv
 sample/X_test_assessland_1.csv
