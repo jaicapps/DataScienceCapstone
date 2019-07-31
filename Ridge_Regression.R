@@ -1,25 +1,20 @@
 # Loading the libraries required:
 library(glmnet)
 library(Metrics)
-library(dummies)
 source("data_type_fun.R")
 source("libraries.R")
+set.seed(123)
 
-df <- read.csv("sample/sample_0.011.csv")
+df <- read.csv("pluto5_stddum.csv")
 
-# Delete block and lot:
-df <- subset(df, select = -c(block,lot))
+# Since we're predicting assessland, drop the following variables:
+df_land <- subset(df, select = -c('bldgarea', 'numfloors', 'unitsres', 'unitstotal',
+                             'bldgfront', 'bldgdepth', 'ext.1', 'proxcode.1', 
+                             'proxcode.2', 'yearbuilt', 'yearalter','income'))
+df_land <- subset(df_land, select = -c(assesstot))
 
-# Convert to categorical variables:
-col_var <- c("cd","schooldist","council","zipcode","firecomp","policeprct",
-             "healtharea","sanitboro","sanitsub","zonedist1","spdist1","ltdheight","landuse",
-             "ext","proxcode","irrlotcode","lottype","borocode","edesignum","sanitdistrict",
-             "healthcenterdistrict", "pfirm15_flag")
-
-df <- data_type(df)
-
-x<- subset(df, select = -c(assessland))
-y<- df[,'assessland']
+x<- subset(df_land, select = -c(assessland))
+y<- df_land[,'assessland']
 data<-cbind(x,y)
 model<-model.matrix(y~., data=data)
 ridgedata= model[,-1]
@@ -30,7 +25,7 @@ y_train <- data$y[train]
 x_test <- data[test, ]
 y_test <- data$y[test]
 k=5 # 5 folds in cross-validation
-grid =10^ seq (4,-2, length =100)
+grid =10^ seq (5,-2, length =100)
 fit <- cv.glmnet(model,y,alpha=0,k=k,lambda = grid)
 lambda_min<-fit$lambda.min #6579.332
 newX <- model.matrix(~.-y,data=x_test)
@@ -42,7 +37,7 @@ preds <- fit_test
 rss <- sum((preds - actual) ^ 2)
 tss <- sum((actual - mean(actual)) ^ 2)
 rsq <- 1 - rss/tss
-rsq # 0.772
+rsq
 
 # RMSE:
-rmse(actual = y_test, predicted = fit_test) #42082.37
+rmse(actual = y_test, predicted = fit_test)
