@@ -5,7 +5,6 @@ Created on Tue Jul 30 14:47:20 2019
 
 @author: jaimiecapps
 """
-
 import pandas as pd
 # Train/Test Split
 from sklearn.model_selection import train_test_split
@@ -16,6 +15,7 @@ from sklearn.neural_network import MLPClassifier
 # Predictions and Evaluation
 from sklearn.metrics import classification_report, confusion_matrix
 
+import matplotlib.pyplot as plt
 
 
 df = pd.read_csv('sample_0.011.csv')
@@ -29,6 +29,12 @@ categorical_vars = ['cd', 'schooldist', 'council', 'zipcode', 'firecomp',
 df_dummies = pd.get_dummies(df[categorical_vars], drop_first=False) #keep all dummies to evaluate importance, for the prediction should say drop_first=True
 df.drop(categorical_vars, axis=1, inplace=True)
 df = pd.concat([df, df_dummies], axis=1)
+
+
+import seaborn as sns # visualization
+###############################
+sns.pairplot( data=df, vars=(df))
+
 
 df.shape    # (15536, 413)
 
@@ -58,6 +64,8 @@ mlp.fit(X_train, y_train)
        #nesterovs_momentum=True, power_t=0.5, random_state=None,
        #shuffle=True, solver='adam', tol=0.0001, validation_fraction=0.1,
        #verbose=False, warm_start=False)
+print("Training set score: %f" % mlp.score(X_train, y_train)) # 0.020512
+print("Test set score: %f" % mlp.score(X_test, y_test)) # 0.001030
 
 
 # Predictions and Evaluation
@@ -76,22 +84,24 @@ mlp.coefs_[2]
 len(mlp.intercepts_[0]) # 7
 
 
+# Biases per layer
+print("Bias values for first hidden layer:")
+print(mlp.intercepts_[0])
+print("\nBias values for second hidden layer:")
+print(mlp.intercepts_[1])
+print("\nBias values for third hidden layer:")
+print(mlp.intercepts_[2])
 
 
+fig, axes = plt.subplots(2,2)
+# use global min / max to ensure all weights are shown on the same scale
+vmin, vmax = mlp.coefs_[0].min(), mlp.coefs_[2].max()
+for coef, ax in zip(mlp.coefs_[0].T, axes.ravel()):
+    ax.matshow(coef.reshape(20.5, 20.5), cmap=plt.cm.gray, vmin=.5 * vmin,
+               vmax=.5 * vmax)
+    ax.set_xticks(())
+    ax.set_yticks(())
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+plt.show()
 
 
