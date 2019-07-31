@@ -11,11 +11,12 @@ import pandas as pd
 
 df1 = pd.read_csv("../pluto6_fullstd.csv")
 df2 = pd.read_csv("../pluto4.csv")
-df = pd.concat([df1, df2["zipcode"]], axis=1, ignore_index=True)
+df = pd.concat([df1, df2["zipcode"]], axis=1)
 X_train, X_test, y_train, y_test, predictors = create_sample(df, "assessland", 0.02, 0.005)
 
 df = pd.DataFrame(X_train)
 df.columns = predictors
+df.drop("zipcode", axis = 1, inplace = True)
 df["assessland"] = pd.DataFrame(y_train)
 
 #Save data
