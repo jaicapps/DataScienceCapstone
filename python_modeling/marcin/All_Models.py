@@ -79,6 +79,7 @@ def hist_diff_test(y_test,y_train, pred_test, pred_train, title):
     type(p)
     ax.hist(p, bins='auto', range=(-75000, 75000))
     ax.title.set_text(title)
+    ax.legend(['Test Error', 'Train Error'])
     
 def show_coefs(coefs, title):
     largest=coefs.nlargest(5,'coef_value')
@@ -136,7 +137,7 @@ X_train, X_test , y_train, y_test = train_test_split(X, y, test_size=0.3, random
 ####### a) looking for best parameters
 #Run it to find the best alpha
 #Set a ranges for alphas
-alphas_range=np.arange(1, 100, 10)
+alphas_range=np.arange(1, 400, 10)
 # Crossvalidate for the best alphas
 regr_cv = RidgeCV(alphas=alphas_range)
 #Visualize alpha 
@@ -229,12 +230,13 @@ show_coefs(coefs=coefs_lasso, title = "Lasso - Top 5 biggest and smallest coefic
 
 ################################### KNN ####################################
 
+#########a) find the best parameters (k)
 # Run XBoost to find the best predictors -> function gradient_boosting()
 best_variables_xgb = gradient_boosting(X,y)
 
 rmse_train = [] #to store rmse values for different k
 rmse_test = []
-for K in range(20):
+for K in range(1,20):
     K = K+1
     
     #Initialize KNN
@@ -255,5 +257,26 @@ for K in range(20):
     print('RMSE Test value for k= ' , K , 'is:', error_test)   
     
 #plotting the rmse values against k values
-curve = pd.DataFrame(rmse_train) #elbow curve 
-curve.plot()
+fig, ax = plt.subplots()
+ax.plot(rmse_train, color = 'blue')
+ax.plot(rmse_test, color = 'red')
+ax.legend(['Train', 'Test'])
+ax.title.set_text('Error')
+
+
+#########b) use best k in the final model
+##### KNN RUN WITH BEST K #####
+#the lowest K run
+best_k=np.argmin(rmse_test)
+# run KNN model with bestk value
+model2 = neighbors.KNeighborsRegressor(n_neighbors = best_k)
+model2.fit(X_train, y_train)
+model2_pred_KNN_test = model2.predict(X_test)
+model2_pred_KNN_train = model2.predict(X_train)
+
+########## c) plots
+#i) lines plot
+lineplot_compare(actual=y_test.values, y_pred=model2_pred_KNN_test, title="KNN, error vs. predicted")
+
+#ii) histogram of difference for TEST
+hist_diff_test(y_test,y_train, model2_pred_KNN_test, model2_pred_KNN_train,title="KNN, Error of difference for Test and Train")
