@@ -79,6 +79,7 @@ def hist_diff_test(y_test,y_train, pred_test, pred_train, title):
     type(p)
     ax.hist(p, bins='auto', range=(-75000, 75000))
     ax.title.set_text(title)
+    ax.legend(['Test Error', 'Train Error'])
     
 def show_coefs(coefs, title):
     largest=coefs.nlargest(5,'coef_value')
@@ -229,7 +230,7 @@ show_coefs(coefs=coefs_lasso, title = "Lasso - Top 5 biggest and smallest coefic
 
 ################################### KNN ####################################
 
-
+#########a) find the best parameters (k)
 # Run XBoost to find the best predictors -> function gradient_boosting()
 best_variables_xgb = gradient_boosting(X,y)
 
@@ -262,6 +263,20 @@ ax.plot(rmse_test, color = 'red')
 ax.legend(['Train', 'Test'])
 ax.title.set_text('Error')
 
-#KNN with the best k
-best_k=np.argmin(rmse_test)
 
+#########b) use best k in the final model
+##### KNN RUN WITH BEST K #####
+#the lowest K run
+best_k=np.argmin(rmse_test)
+# run KNN model with bestk value
+model2 = neighbors.KNeighborsRegressor(n_neighbors = best_k)
+model2.fit(X_train, y_train)
+model2_pred_KNN_test = model2.predict(X_test)
+model2_pred_KNN_train = model2.predict(X_train)
+
+########## c) plots
+#i) lines plot
+lineplot_compare(actual=y_test.values, y_pred=model2_pred_KNN_test, title="KNN, error vs. predicted")
+
+#ii) histogram of difference for TEST
+hist_diff_test(y_test,y_train, model2_pred_KNN_test, model2_pred_KNN_train,title="KNN, Error of difference for Test and Train")
