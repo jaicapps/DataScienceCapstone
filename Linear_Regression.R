@@ -7,8 +7,7 @@ library(Metrics)
 options("scipen"=100, "digits"=4)
 
 set.seed(123)
-
-df <- read.csv("pluto5_stddum.csv")
+df <- read.csv("pluto5_samplestd.csv")
 
 # 1. Since we're predicting assessland, drop the following variables:
 df_land <- subset(df, select = -c(bldgarea, numfloors, unitsres, unitstotal, bldgfront, 
