@@ -18,8 +18,6 @@ from sklearn.metrics import classification_report, confusion_matrix
 import matplotlib.pyplot as plt
 
 
-
-
 df = pd.read_csv('sample_0.011.csv')
 df.drop(['block', 'lot', 'assesstot'], axis=1, inplace=True)
 
@@ -31,6 +29,12 @@ categorical_vars = ['cd', 'schooldist', 'council', 'zipcode', 'firecomp',
 df_dummies = pd.get_dummies(df[categorical_vars], drop_first=False) #keep all dummies to evaluate importance, for the prediction should say drop_first=True
 df.drop(categorical_vars, axis=1, inplace=True)
 df = pd.concat([df, df_dummies], axis=1)
+
+
+import seaborn as sns # visualization
+###############################
+sns.pairplot( data=df, vars=(df))
+
 
 df.shape    # (15536, 413)
 
@@ -99,13 +103,5 @@ for coef, ax in zip(mlp.coefs_[0].T, axes.ravel()):
     ax.set_yticks(())
 
 plt.show()
-
-
-
-
-
-
-
-
 
 
