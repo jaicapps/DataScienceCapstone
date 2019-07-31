@@ -38,5 +38,6 @@ pluto_18v2_1.csv
 df_model.csv
 result_of_Model_Based.rds
 sample/__pycache__/
+pluto5_stddum.csv
 
 NYC.twb
