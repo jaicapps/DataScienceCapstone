@@ -12,7 +12,7 @@ df1 = df.drop(["assessland", "assesstot"], axis =1)
 pca = PCA(n_components = 170)
 pc = pca.fit_transform(df1)
 a = pca.explained_variance_ratio_
-sum(a) # 
+sum(a) # 93.4% of data variation explained 
 for i in a:
     print('{:f}'.format(i))
 pdf = pd.DataFrame(data = pc)
