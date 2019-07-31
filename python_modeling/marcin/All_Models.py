@@ -136,7 +136,7 @@ X_train, X_test , y_train, y_test = train_test_split(X, y, test_size=0.3, random
 ####### a) looking for best parameters
 #Run it to find the best alpha
 #Set a ranges for alphas
-alphas_range=np.arange(1, 100, 10)
+alphas_range=np.arange(1, 400, 10)
 # Crossvalidate for the best alphas
 regr_cv = RidgeCV(alphas=alphas_range)
 #Visualize alpha 
@@ -229,12 +229,13 @@ show_coefs(coefs=coefs_lasso, title = "Lasso - Top 5 biggest and smallest coefic
 
 ################################### KNN ####################################
 
+
 # Run XBoost to find the best predictors -> function gradient_boosting()
 best_variables_xgb = gradient_boosting(X,y)
 
 rmse_train = [] #to store rmse values for different k
 rmse_test = []
-for K in range(20):
+for K in range(1,20):
     K = K+1
     
     #Initialize KNN
@@ -255,5 +256,12 @@ for K in range(20):
     print('RMSE Test value for k= ' , K , 'is:', error_test)   
     
 #plotting the rmse values against k values
-curve = pd.DataFrame(rmse_train) #elbow curve 
-curve.plot()
+fig, ax = plt.subplots()
+ax.plot(rmse_train, color = 'blue')
+ax.plot(rmse_test, color = 'red')
+ax.legend(['Train', 'Test'])
+ax.title.set_text('Error')
+
+#KNN with the best k
+best_k=np.argmin(rmse_test)
+
