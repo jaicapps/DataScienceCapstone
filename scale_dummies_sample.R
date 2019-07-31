@@ -3,7 +3,7 @@ source("data_type_fun.R")
 source("libraries.R")
 library(caret)
 gc()
-df <- read.csv("sample/sample_0.011.csv")
+df <- read.csv("pluto4.csv")
 
 # Delete block and lot:
 df <- subset(df, select = -c(block,lot))
@@ -25,4 +25,4 @@ df <- data_type(df)
 dmy <- dummyVars("~.", data = df, fullRank = T)
 df <- data.frame(predict(dmy, newdata = df)) # Have to convert to dummies for avoiding 
 #the error of some factors' levels present in training set but not in test set.
-write.csv(df, file = "pluto6_full.csv", row.names=FALSE)
+write.csv(df, file = "pluto6_fullstd.csv", row.names=FALSE)
