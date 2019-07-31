@@ -33,7 +33,7 @@ from sklearn.preprocessing import StandardScaler
 ############################# DATA READING ################################
 
 #Read data
-data = pd.read_csv("sample/sample_0.011.csv")
+data = pd.read_csv("pluto4.csv")
 
 ######################## TARGET IS: ASSESSLAND #############################
 data = data.drop(['assesstot'], axis=1) # drop assesstot
@@ -57,10 +57,31 @@ for i in to_factors:
     print(i)    
     
 ########################### SCALE ONLY NUMERIC AND COMBINED WITH FACTOR DUMMIES ##################################   
+import pandas as pd
+from sklearn.preprocessing import StandardScaler
+
+#Read data
+data = pd.read_csv("pluto4.csv")
+
+# drop block and lot, we don't use it
+data=data.drop(['lot','block'], axis=1)
+
+#Scpecify what columns are factors
+to_factors = ["cd","schooldist","council","zipcode","policeprct",
+              "firecomp","healtharea","sanitboro","sanitsub","zonedist1",
+              "spdist1","ltdheight","landuse","irrlotcode","lottype",
+              "borocode","edesignum","sanitdistrict","healthcenterdistrict", 
+              "pfirm15_flag","ext","proxcode"]
+
+#Converte to factors
+for i in to_factors: 
+    data[i] = data[i].astype('category')
+    print(i)    
 
 # SCALE NUMERIC
 not_scale=to_factors
 not_scale.append('assessland') # for some reason it adds assessland to to_factors
+not_scale.append('assesstot') #adds assesstot also
 
 numeric_df=data[data.columns.difference(not_scale)]
 
@@ -70,6 +91,7 @@ numeric_df_std = scaler.fit_transform(numeric_df)
 numeric_df = pd.DataFrame(numeric_df_std, columns = numeric_df.columns)
 
 to_factors.remove('assessland')
+to_factors.remove('assesstot')
 # DUMMIE/ ONE-HOT ENCODING 
 ## Convert all to dummies, AND DELETE factors which means we do k-1 variables
 df_dummies = pd.get_dummies(data[to_factors], drop_first=True)
@@ -88,8 +110,6 @@ scaler = StandardScaler()
 X_std = scaler.fit_transform(X)
 # Put column names again for X
 X = pd.DataFrame(X_std, columns = X.columns)
-
-
 
 from sklearn.preprocessing import minmax_scale
 X[to_factors] = minmax_scale(df[['x','z']])
