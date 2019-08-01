@@ -14,6 +14,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.metrics import mean_squared_error, r2_score
 from math import sqrt
+import keras.backend as K
+
 
 def generate_report(y_actual, y_pred):
     mse = round(mean_squared_error(y_actual, y_pred),3)
@@ -64,9 +66,12 @@ def get_data(filename, target):
     x_train, x_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, random_state=0)
     return x_train, x_test, y_train, y_test, predictors
 
+def root_mean_squared_error(y_true, y_pred):
+        return K.sqrt(K.mean(K.square(y_pred - y_true))) 
+
 #3)Adam combines the good properties of Adadelta and RMSprop and hence tend to do better for most of the problems.
 def fit_model(model, x_train, x_test, y_train, y_test, optimizer, epochs, model_id=None):
-    model.compile(loss='mse', optimizer=optimizer, metrics=['mse'])
+    model.compile(loss=root_mean_squared_error, optimizer=optimizer, metrics=['mse'])
     history = model.fit(x_train, y_train, epochs=epochs, verbose=0, validation_data=(x_test, y_test))
     filename = None
     if (model_id!=None):
@@ -115,9 +120,9 @@ def run_model(input_nodes, hidden_nodes, x_train, x_test, y_train, y_test, optim
     filename = None
     if (model_id!=None):
         filename = 'compare_train' + str(model_id) + '.png'
-    print('Histogram Training')
+    print('Compare Training')
     plot_compare(y_train, y_train_pred, filename=filename)
-    print('Histogram Test')
+    print('Compare Test')
     filename = None
     if (model_id!=None):
         filename = 'compare_train' + str(model_id) + '.png'
