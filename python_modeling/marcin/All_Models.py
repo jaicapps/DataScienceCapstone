@@ -34,6 +34,11 @@ from sklearn.feature_selection import SelectFromModel
 #KNN
 from sklearn import neighbors
 
+#Random Forest
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import RandomizedSearchCV
+from pprint import pprint
+
 ###################################### FUNCTIONS ########################
 # Histogram to compare predcited vs. actual
 def lineplot_compare(actual, y_pred, title, filename=None):
@@ -236,7 +241,7 @@ best_variables_xgb = gradient_boosting(X,y)
 
 rmse_train = [] #to store rmse values for different k
 rmse_test = []
-for K in range(1,20):
+for K in range(1,10):
     K = K+1
     
     #Initialize KNN
@@ -280,3 +285,41 @@ lineplot_compare(actual=y_test.values, y_pred=model2_pred_KNN_test, title="KNN, 
 
 #ii) histogram of difference for TEST
 hist_diff_test(y_test,y_train, model2_pred_KNN_test, model2_pred_KNN_train,title="KNN, Error of difference for Test and Train")
+
+
+
+####################### Regression Tree - Random Forest ######################
+
+####### a) Run a grid to find the best parameters using RandomizedSearchCV
+# Number of trees in random forest
+n_estimators = [int(x) for x in np.linspace(start = 200, stop = 2000, num = 10)]
+# Number of features to consider at every split
+max_features = ['auto', 'sqrt']
+# Maximum number of levels in tree
+max_depth = [int(x) for x in np.linspace(10, 110, num = 11)]
+max_depth.append(None)
+# Minimum number of samples required to split a node
+min_samples_split = [2, 5, 10]
+# Minimum number of samples required at each leaf node
+min_samples_leaf = [1, 2, 4]
+# Method of selecting samples for training each tree
+bootstrap = [True, False]# Create the random grid
+random_grid = {'n_estimators': n_estimators,
+               'max_features': max_features,
+               'max_depth': max_depth,
+               'min_samples_split': min_samples_split,
+               'min_samples_leaf': min_samples_leaf,
+               'bootstrap': bootstrap}
+
+# So this is your setting we search among
+pprint(random_grid)
+# Use the random grid to search for best hyperparameters
+# First create the base model to tune
+rf = RandomForestRegressor()
+# Random search of parameters, using 3 fold cross validation, 
+# search across 100 different combinations, and use all available cores
+rf_random = RandomizedSearchCV(estimator = rf, param_distributions = random_grid, n_iter = 70, cv = 5, verbose=2, random_state=42, n_jobs = -1)# Fit the random search model
+rf_random.fit(X_train, y_train)
+
+#View the best parameters:
+print("the output:", rf_random.best_params_)
