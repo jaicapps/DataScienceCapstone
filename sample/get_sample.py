@@ -9,8 +9,8 @@ Created on Thu Jul 25 13:51:39 2019
 from proportion_sample import create_sample
 import pandas as pd
 
-df1 = pd.read_csv("../pluto6_fullstd.csv")
-df2 = pd.read_csv("../pluto4.csv")
+df1 = pd.read_csv("../Brooklyn.csv")
+df2 = pd.read_csv("../Brooklyn_Merge.csv")
 df = pd.concat([df1, df2["zipcode"]], axis=1)
 X_train, X_test, y_train, y_test, predictors = create_sample(df, "assessland", 0.02, 0.005)
 
@@ -20,4 +20,4 @@ df.drop("zipcode", axis = 1, inplace = True)
 df["assessland"] = pd.DataFrame(y_train)
 
 #Save data
-df.to_csv("pluto5_samplestd.csv", index=False)
+df.to_csv("Brooklyn_sample.csv", index=False)
