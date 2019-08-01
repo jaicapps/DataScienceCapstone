@@ -1,5 +1,6 @@
 *pluto5_stddum.csv
 .ipynb_checkpoints/
+nn/final/__pycache__/
 nn/__pycache__/
 pluto3.csv
 pluto4.csv

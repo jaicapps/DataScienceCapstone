@@ -114,7 +114,13 @@ def run_model(input_nodes, hidden_nodes, x_train, x_test, y_train, y_test, optim
     y_train_pred, y_test_pred, mse,rmse,r2,error = predict(model, x_train, y_train, x_test, y_test, filename=filename)
     filename = None
     if (model_id!=None):
-        filename = 'compare_' + str(model_id) + '.png'
+        filename = 'compare_train' + str(model_id) + '.png'
+    print('Histogram Training')
+    plot_compare(y_train, y_train_pred, filename=filename)
+    print('Histogram Test')
+    filename = None
+    if (model_id!=None):
+        filename = 'compare_train' + str(model_id) + '.png'
     plot_compare(y_test, y_test_pred, filename=filename)
     return y_train_pred, y_test_pred, mse,rmse,r2,error
 
