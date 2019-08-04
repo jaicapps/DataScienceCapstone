@@ -20,7 +20,7 @@ print('PCA assessland - sample')
 x_train, x_test, y_train, y_test, predictors = nn_functions.get_data('../../plutoPCA_land.csv','assessland')
 epochs = 10
 input_nodes = 170
-hidden_nodes = 114 
+hidden_nodes = 51 
 optimizer = 'rmsprop'
 nn_functions.run_model(input_nodes, hidden_nodes, x_train, x_test, y_train, y_test, optimizer, epochs, 2)
 
@@ -34,9 +34,9 @@ nn_functions.run_model(input_nodes, hidden_nodes, x_train, x_test, y_train, y_te
 
 print('PCA assessland - full')
 x_train, x_test, y_train, y_test, predictors = nn_functions.get_data('../../python_modeling/arjuna/plutoPCA_fullland.csv','assessland')
-epochs = 30
+epochs = 100
 input_nodes = 170
-hidden_nodes = 114 
+hidden_nodes = 51 
 optimizer = 'rmsprop'
 nn_functions.run_model(input_nodes, hidden_nodes, x_train, x_test, y_train, y_test, optimizer, epochs, 4)
 

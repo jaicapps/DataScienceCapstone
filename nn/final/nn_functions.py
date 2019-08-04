@@ -70,11 +70,9 @@ def get_data(filename, target):
 def root_mean_squared_error(y_true, y_pred):
         return K.sqrt(K.mean(K.square(y_pred - y_true))) 
 
-#3)Adam combines the good properties of Adadelta and RMSprop and hence tend to do better for most of the problems.
 def fit_model(model, x_train, x_test, y_train, y_test, optimizer, epochs, model_id=None):
     model.compile(loss=root_mean_squared_error, optimizer=optimizer, metrics=['mse'])
-    #history = model.fit(x_train, y_train, epochs=epochs, verbose=0, validation_data=(x_test, y_test), shuffle=True)
-    history = model.fit(x_train, y_train, epochs=epochs, verbose=0, validation_split=0.2)
+    history = model.fit(x_train, y_train, epochs=epochs, verbose=0, validation_data=(x_test, y_test), shuffle=True)
     filename = None
     if (model_id!=None):
         filename = 'loss_' + str(model_id) + '.png'
@@ -101,7 +99,7 @@ def run_model(input_nodes, hidden_nodes, x_train, x_test, y_train, y_test, optim
     model = tf.keras.models.Sequential()
     model.add(tf.keras.layers.Dense(input_nodes, tf.keras.activations.linear))
     model.add(tf.keras.layers.Dense(hidden_nodes, tf.keras.activations.relu))
-    model.add(tf.keras.layers.Dense(56, tf.keras.activations.relu))
+    model.add(tf.keras.layers.Dense(1, tf.keras.activations.linear))
     model = fit_model(model, x_train, x_test, y_train, y_test, optimizer, epochs, model_id)    
     y_train_pred, y_test_pred, mse,rmse,r2,error = predict(model, x_train, y_train, x_test, y_test)
     fig, (ax1, ax2) = plt.subplots(1, 2, sharex=False, sharey=True)
