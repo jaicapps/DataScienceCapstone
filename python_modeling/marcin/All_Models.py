@@ -95,7 +95,7 @@ def show_coefs(coefs, title):
     plt.bar(range(len(both['coef_value'])),[x-baseline for x in both['coef_value']])
     plt.xticks(np.arange(10), (both.index.values))
     plt.xticks(rotation=90)
-    plt.suptitle(title, fontsize=15)
+    plt.suptitle(title) #, fontsize=15)
     plt.show()
 
 # you gives the function X and y and it chooses the best predictors and gives 
@@ -104,7 +104,7 @@ def gradient_boosting(X,y):
     model = XGBRegressor()
     model.fit(X, y)
     # plot feature importance
-    plot_importance(model)
+    plot_importance(model,max_num_features=25)
     plt.show()
     # Create data frame where columns are sorted by their importance
     results=pd.DataFrame()
@@ -142,7 +142,7 @@ X_train, X_test , y_train, y_test = train_test_split(X, y, test_size=0.3, random
 ####### a) looking for best parameters
 #Run it to find the best alpha
 #Set a ranges for alphas
-alphas_range=np.arange(1, 400, 10)
+alphas_range=np.arange(1, 200, 5)
 # Crossvalidate for the best alphas
 regr_cv = RidgeCV(alphas=alphas_range)
 #Visualize alpha 
@@ -173,9 +173,9 @@ print("R^2 for Test:",ridge.score(X_test, y_test)) #R2
 
 ##### c) plots
 #i) lines plot
-lineplot_compare(actual=y_test.values, y_pred=pred_test,title="Ridge", filename=None)
+lineplot_compare(actual=y_test.values, y_pred=pred_test,title="Predicted vs. Real Values", filename=None)
 #ii) histogram of difference for TEST
-hist_diff_test(y_test,y_train, pred_test, pred_train)
+hist_diff_test(y_test,y_train, pred_test, pred_train, title="Histogram of difference")
 
 #iii) Show the biggest coeficient (Top 10)
 largest=coefs_ridge.nlargest(5,'coef_value')
@@ -186,6 +186,7 @@ baseline = 1
 plt.bar(range(len(both['coef_value'])),[x-baseline for x in both['coef_value']])
 plt.xticks(np.arange(10), (both.index.values))
 plt.xticks(rotation=90)
+plt.title("Top 10 Most Important Predictors")
 plt.show()
 
 ################################### LASSO ####################################
@@ -193,7 +194,7 @@ plt.show()
 ####### a) looking for best parameters
 # reference: https://www.scikit-yb.org/en/latest/api/regressor/alphas.html
 # Create a list of alphas to cross-validate against
-alphas2=np.arange(1, 100, 10) #range for alpha
+alphas2=np.arange(1, 200, 5) #range for alpha
 # Instantiate the linear model and visualizer
 model2 = LassoCV(alphas=alphas2)
 visualizer2 = AlphaSelection(model2)
@@ -224,13 +225,15 @@ print("Lasso restricted", coefs_lasso[coefs_lasso['coef_value'] == 0].count(), "
 
 ###### c) plots
 #i) lines plot
-lineplot_compare(actual=y_test.values, y_pred=pred_test_las,title="Lasso, error vs. predicted", filename=None)
+lineplot_compare(actual=y_test.values, y_pred=pred_test_las,title="Predicted vs. Real Values (Lasso)", filename=None)
 
 #ii) histogram of difference for TEST
-hist_diff_test(y_test,y_train, pred_test_las, pred_train_las,title="Lasso, Difference error for Test and Train")
+hist_diff_test(y_test,y_train, pred_test_las, pred_train_las,title="Histogram of difference (Lasso)")
 
 #iii)
-show_coefs(coefs=coefs_lasso, title = "Lasso - Top 5 biggest and smallest coeficients")
+show_coefs(coefs=coefs_lasso, title = "Top 10 Most Important Predictors (Lasso)")
+
+
 
 
 ################################### KNN ####################################
@@ -238,23 +241,24 @@ show_coefs(coefs=coefs_lasso, title = "Lasso - Top 5 biggest and smallest coefic
 #########a) find the best parameters (k)
 # Run XBoost to find the best predictors -> function gradient_boosting()
 best_variables_xgb = gradient_boosting(X,y)
+# Display only first 20 feauters
 
 rmse_train = [] #to store rmse values for different k
 rmse_test = []
-for K in range(1,10):
+for K in range(0,10):
     K = K+1
     
     #Initialize KNN
     model = neighbors.KNeighborsRegressor(n_neighbors = K)
     #fit the model
     model.fit(X_train, y_train)
-
-    # TRAIN SET
+    '''
+ # TRAIN SET
     pred_train_KNN = model.predict(X_train) #make prediction on test set
     error_train = sqrt(mean_squared_error(y_train,pred_train_KNN)) #calculate rmse
     rmse_train.append(error_train) #store rmse values
     print('RMSE Train value for k= ' , K , 'is:', error_train)
-    
+    '''
     # TEST SET
     pred_test_KNN = model.predict(X_test) #make prediction on test set
     error_test = sqrt(mean_squared_error(y_test,pred_test_KNN)) #calculate rmse
@@ -263,28 +267,40 @@ for K in range(1,10):
     
 #plotting the rmse values against k values
 fig, ax = plt.subplots()
-ax.plot(rmse_train, color = 'blue')
-ax.plot(rmse_test, color = 'red')
-ax.legend(['Train', 'Test'])
-ax.title.set_text('Error')
+#ax.plot(rmse_train, color = 'blue')
+ax.plot(rmse_test, color = 'blue')
+#ax.legend(['Train', 'Test'])
+ax.title.set_text('RMSE for different value of neighbour')
 
 
 #########b) use best k in the final model
 ##### KNN RUN WITH BEST K #####
 #the lowest K run
-best_k=np.argmin(rmse_test)
+best_k=np.argmin(rmse_test)+1
 # run KNN model with bestk value
 model2 = neighbors.KNeighborsRegressor(n_neighbors = best_k)
+# Fit the model
 model2.fit(X_train, y_train)
-model2_pred_KNN_test = model2.predict(X_test)
+
+# TRAIN SET
 model2_pred_KNN_train = model2.predict(X_train)
+# Calculate RMSE train
+print("RMSE for Train:",sqrt(mean_squared_error(y_train, model2_pred_KNN_train))) #RMSE
+print("R^2 for Train:",model2.score(X_train, y_train)) #R2
+
+# TEST SET
+model2_pred_KNN_test = model2.predict(X_test)
+#RMSE test
+print("RMSE for Test:",sqrt(mean_squared_error(y_test, model2_pred_KNN_test))) #RMSE
+print("R^2 for Test:",model2.score(X_test, y_test)) #R2
+
 
 ########## c) plots
 #i) lines plot
-lineplot_compare(actual=y_test.values, y_pred=model2_pred_KNN_test, title="KNN, error vs. predicted")
+lineplot_compare(actual=y_test.values, y_pred=model2_pred_KNN_test, title="Predicted vs. Real Values (KNN)")
 
 #ii) histogram of difference for TEST
-hist_diff_test(y_test,y_train, model2_pred_KNN_test, model2_pred_KNN_train,title="KNN, Error of difference for Test and Train")
+hist_diff_test(y_test,y_train, model2_pred_KNN_test, model2_pred_KNN_train,title="Histogram of difference (KNN)")
 
 
 
@@ -318,7 +334,7 @@ pprint(random_grid)
 rf = RandomForestRegressor()
 # Random search of parameters, using 3 fold cross validation, 
 # search across 100 different combinations, and use all available cores
-rf_random = RandomizedSearchCV(estimator = rf, param_distributions = random_grid, n_iter = 70, cv = 5, verbose=2, random_state=42, n_jobs = -1)# Fit the random search model
+rf_random = RandomizedSearchCV(estimator = rf, param_distributions = random_grid, n_iter = 100, cv = 3, verbose=2, random_state=42, n_jobs = -1)# Fit the random search model
 rf_random.fit(X_train, y_train)
 
 #View the best parameters:
